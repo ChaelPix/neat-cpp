@@ -27,7 +27,7 @@ void callback_generation(int generation)
 int main(int argc, char *argv[])
 {
     // Initialize NEAT configuration
-    NeatConfig config = load_config_from_file("config.txt");
+    NeatConfig config = load_config_from_file("default_config.txt");
 
     // Initialize population
     Population *p = new Population(config);

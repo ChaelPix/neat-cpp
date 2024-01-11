@@ -6,13 +6,12 @@
 class TestNode : public ::testing::Test
 {
 protected:
-    // Variables
     NeatConfig config;
     Node *node;
 
     void SetUp() override
     {
-        config = load_config_from_file("config.txt");
+        config = load_config_from_file("default_config.txt");
         node = new Node(1, "relu", 1);
     }
 
