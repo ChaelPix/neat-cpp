@@ -16,10 +16,8 @@ NeatConfig load_config_from_file(const std::string &filename)
         while (std::getline(file, line))
         {
             if (line.empty() || line[0] == '#')
-            {
                 // Skip empty lines and comments
                 continue;
-            }
 
             // Parse key-value pair
             std::istringstream iss(line);
@@ -111,16 +109,12 @@ NeatConfig load_config_from_file(const std::string &filename)
             else if (key == "bad_species_threshold")
                 config.bad_species_threshold = std::stod(value);
             else
-            {
                 std::cerr << "Unknown key: " << key << std::endl;
-            }
         }
         file.close();
     }
     else
-    {
         std::cerr << "Unable to open file: " << filename << std::endl;
-    }
 
     return config;
 }

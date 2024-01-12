@@ -22,9 +22,7 @@ std::string generate_uid(int size)
     std::uniform_int_distribution<> dis(0, characters.size() - 1);
 
     for (int i = 0; i < size; ++i)
-    {
         uid += characters[dis(gen)];
-    }
 
     return uid;
 }
@@ -38,9 +36,7 @@ Genome::Genome(const NeatConfig &config, bool crossover) : config(config), input
     id = generate_uid(8);
 
     if (crossover)
-    {
         return;
-    }
 
     // create input nodes
     for (int i = 0; i < inputs; ++i)
@@ -66,15 +62,11 @@ Genome::~Genome()
 {
     // Clean up memory for nodes
     for (auto &node : nodes)
-    {
         delete node;
-    }
 
     // Clean up memory for genes
     for (auto &gene : genes)
-    {
         delete gene;
-    }
 }
 
 void Genome::fully_connect(std::vector<ConnectionHistory *> innovation_history)
@@ -120,12 +112,8 @@ void Genome::fully_connect(std::vector<ConnectionHistory *> innovation_history)
 Node *Genome::get_node(int id)
 {
     for (auto &n : nodes)
-    {
         if (n->id == id)
-        {
             return n;
-        }
-    }
     return nullptr;
 }
 
@@ -133,15 +121,11 @@ void Genome::connect_nodes()
 {
     // Clear the connections for each node
     for (auto &n : nodes)
-    {
         n->output_connections.clear();
-    }
 
     // Add the connections to the nodes
     for (auto &g : genes)
-    {
         g->from_node->output_connections.push_back(g);
-    }
 }
 
 std::vector<double> Genome::feed_forward(std::vector<double> input_values)
@@ -150,9 +134,7 @@ std::vector<double> Genome::feed_forward(std::vector<double> input_values)
     {
         // Set the outputs of the input nodes
         for (int i = 0; i < inputs; ++i)
-        {
             nodes[i]->output_value = input_values[i];
-        }
 
         // Output of bias is 1
         nodes[bias_node]->output_value = 1;
@@ -167,15 +149,11 @@ std::vector<double> Genome::feed_forward(std::vector<double> input_values)
         // The outputs are nodes[inputs] to nodes[inputs+outputs-1]
         std::vector<double> outs(outputs, 0.0);
         for (int i = 0; i < outputs; ++i)
-        {
             outs[i] = nodes[inputs + i]->output_value;
-        }
 
         // Reset all the nodes for the next feed forward
         for (auto &n : nodes)
-        {
             n->input_sum = 0;
-        }
 
         return outs;
     }
@@ -196,15 +174,9 @@ void Genome::generate_network()
 
     // For each layer, add the nodes in that layer to the network
     for (int l = 0; l < layers; ++l)
-    {
         for (auto &n : nodes)
-        {
             if (n->layer == l)
-            {
                 network.push_back(n);
-            }
-        }
-    }
 }
 
 void Genome::add_node(std::vector<ConnectionHistory *> innovation_history)
@@ -219,10 +191,8 @@ void Genome::add_node(std::vector<ConnectionHistory *> innovation_history)
     int random_connection = rand() % genes.size();
 
     while (genes[random_connection]->from_node == nodes[bias_node] && genes.size() != 1)
-    {
         // Don't disconnect bias
         random_connection = rand() % genes.size();
-    }
 
     genes[random_connection]->enabled = false; // Disable the connection
 
@@ -274,19 +244,13 @@ void Genome::add_node(std::vector<ConnectionHistory *> innovation_history)
 
         // Keep value between bounds
         if (bias_value > config.bias_max_value)
-        {
             bias_value = config.bias_max_value;
-        }
         if (bias_value < config.bias_min_value)
-        {
             bias_value = config.bias_min_value;
-        }
     }
     else if (config.bias_init_type == "uniform")
-    {
         bias_value = uniform(
             config.bias_min_value, config.bias_max_value);
-    }
 
     // Connect the bias to the new node
     genes.push_back(
@@ -302,13 +266,9 @@ void Genome::add_node(std::vector<ConnectionHistory *> innovation_history)
     if (get_node(new_node_nb)->layer == genes[random_connection]->to_node->layer)
     {
         for (auto &n : nodes)
-        {
             // Don't include this newest node
             if (n->layer >= get_node(new_node_nb)->layer)
-            {
                 n->layer += 1;
-            }
-        }
         ++layers;
     }
 
@@ -340,9 +300,7 @@ void Genome::add_connection(std::vector<ConnectionHistory *> innovation_history)
 {
     // Cannot add a connection to a fully connected network
     if (fully_connected())
-    {
         return;
-    }
 
     auto random_connection_nodes_are_valid = [&](int rand1, int rand2)
     {
@@ -407,18 +365,12 @@ double Genome::new_connection_weight() const
 
         // Keep the value between bounds
         if (weight > config.weight_max_value)
-        {
             weight = config.weight_max_value;
-        }
         if (weight < config.weight_min_value)
-        {
             weight = config.weight_min_value;
-        }
     }
     else if (config.weight_init_type == "uniform")
-    {
         weight = uniform(config.weight_min_value, config.weight_max_value);
-    }
 
     return weight;
 }
@@ -445,10 +397,8 @@ int Genome::get_innovation_number(std::vector<ConnectionHistory *> innovation_hi
         // If the mutation is new, create a vector of connection history representing the current state of the genome
         std::vector<int> innovation_numbers;
         for (const auto &gene : genes)
-        {
             // Set the innovation numbers
             innovation_numbers.push_back(gene->innovation_nb);
-        }
 
         // Then, add this mutation to the innovation history
         innovation_history.push_back(new ConnectionHistory(from_node, to_node, connection_innovation_nb, innovation_numbers));
@@ -467,19 +417,15 @@ bool Genome::fully_connected() const
 
     // Populate the array
     for (const auto &node : nodes)
-    {
         ++nodes_in_layers[node->layer];
-    }
 
     // For each layer, calculate the maximum number of connections
     for (int i = 0; i < layers - 1; ++i)
     {
         int nodes_in_front = 0;
         for (int j = i + 1; j < layers; ++j)
-        {
             // For each layer in front of this layer
             nodes_in_front += nodes_in_layers[j]; // Add up nodes
-        }
 
         max_connections += nodes_in_layers[i] * nodes_in_front;
     }
@@ -490,9 +436,7 @@ bool Genome::fully_connected() const
 void Genome::mutate(std::vector<ConnectionHistory *> innovation_history)
 {
     if (genes.empty())
-    {
         add_connection(innovation_history);
-    }
 
     for (auto &node : nodes)
     {
@@ -501,29 +445,19 @@ void Genome::mutate(std::vector<ConnectionHistory *> innovation_history)
     }
 
     for (auto &gene : genes)
-    {
         gene->mutate(config);
-    }
 
     if (rand() < RAND_MAX * config.conn_add_prob)
-    {
         add_connection(innovation_history);
-    }
 
     if (rand() < RAND_MAX * config.conn_delete_prob)
-    {
         remove_connection();
-    }
 
     if (rand() < RAND_MAX * config.node_add_prob)
-    {
         add_node(innovation_history);
-    }
 
     if (rand() < RAND_MAX * config.node_delete_prob)
-    {
         remove_node();
-    }
 }
 
 Genome *Genome::crossover(Genome *parent) const
@@ -558,14 +492,10 @@ Genome *Genome::crossover(Genome *parent) const
             }
 
             if (rand() < 0.5 * RAND_MAX)
-            {
                 child_genes.push_back(gene);
-            }
             else
-            {
                 // Get gene from the parent
                 child_genes.push_back(parent->genes[parent_gene_index]);
-            }
         }
         else
         {
@@ -582,9 +512,7 @@ Genome *Genome::crossover(Genome *parent) const
     // but this won't affect nodes.
     // So, all the nodes can be inherited from this parent.
     for (auto &node : nodes)
-    {
         child->nodes.push_back(node->clone());
-    }
 
     // Clone all the connections so that they connect the child new nodes
     for (size_t i = 0; i < child_genes.size(); ++i)
@@ -611,17 +539,13 @@ bool Genome::is_equal(Genome *other)
 
     // Compare each node
     for (size_t i = 0; i < nodes.size(); ++i)
-    {
         if (!nodes[i]->is_equal(other->nodes[i]))
             return false;
-    }
 
     // Compare each gene
     for (size_t i = 0; i < genes.size(); ++i)
-    {
         if (!genes[i]->is_equal(other->genes[i]))
             return false;
-    }
 
     return true;
 }
@@ -629,10 +553,8 @@ bool Genome::is_equal(Genome *other)
 int Genome::matching_gene(Genome *parent, int innovation) const
 {
     for (size_t i = 0; i < parent->genes.size(); ++i)
-    {
         if (parent->genes[i]->innovation_nb == innovation)
             return i;
-    }
     return -1; // No matching gene found
 }
 
@@ -664,17 +586,13 @@ Genome *Genome::clone()
 
     // Copy nodes
     for (auto node : nodes)
-    {
         clone->nodes.push_back(node->clone());
-    }
 
     // Copy genes and connect them to the clone new nodes
     for (auto gene : genes)
-    {
         clone->genes.push_back(gene->clone(
             clone->get_node(gene->from_node->id),
             clone->get_node(gene->to_node->id)));
-    }
 
     clone->layers = layers;
     clone->next_node = next_node;
@@ -691,9 +609,7 @@ void Genome::save(const std::string &file_path)
     size_t pos = file_path.find_last_of('/');
     std::string dir = file_path.substr(0, pos);
     if (!dir.empty() && !std::__fs::filesystem::exists(dir))
-    {
         std::__fs::filesystem::create_directories(dir);
-    }
 
     // Serialize and save the model to a file
     std::ofstream file(file_path, std::ios::binary);
@@ -704,9 +620,7 @@ void Genome::save(const std::string &file_path)
         std::cout << "Genome saved to '" << file_path << "'" << std::endl;
     }
     else
-    {
         std::cerr << "Failed to save genome to '" << file_path << "'" << std::endl;
-    }
 }
 
 Genome *Genome::load(const std::string &file_path)

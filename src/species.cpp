@@ -17,9 +17,7 @@ Species::Species(Genome *genome)
 Species::~Species()
 {
     for (auto &genome : genomes)
-    {
         delete genome;
-    }
 }
 
 void Species::add_to_species(Genome *genome)
@@ -38,9 +36,7 @@ bool Species::same_species(Genome *genome, const NeatConfig &config)
 
     int large_genome_normalizer = genomes.size() - 20;
     if (large_genome_normalizer < 1)
-    {
         large_genome_normalizer = 1;
-    }
 
     // Compatibility formula
     float compatibility = (compatibility_disjoint_coefficient * excess_and_disjoint) / large_genome_normalizer +
@@ -70,9 +66,7 @@ int Species::get_excess_disjoint_genes(Genome *genome1, Genome *genome2)
 float Species::average_weight_diff(Genome *genome1, Genome *genome2)
 {
     if (genome1->genes.empty() || genome2->genes.empty())
-    {
         return 0;
-    }
 
     int matching = 0;
     float total_diff = 0;
@@ -90,10 +84,8 @@ float Species::average_weight_diff(Genome *genome1, Genome *genome2)
     }
 
     if (matching == 0)
-    {
         // Divide by 0 error
         return 100;
-    }
 
     return total_diff / matching;
 }
@@ -116,18 +108,14 @@ void Species::sort_genomes()
         champion = genomes[0]->clone();
     }
     else
-    {
         stagnation++;
-    }
 }
 
 void Species::set_average_fitness()
 {
     float sum = 0;
     for (auto &g : genomes)
-    {
         sum += g->fitness;
-    }
     average_fitness = sum / genomes.size();
 }
 
@@ -135,9 +123,7 @@ Genome *Species::give_me_baby(std::vector<ConnectionHistory *> innovation_histor
 {
     Genome *baby;
     if (rand() / static_cast<float>(RAND_MAX) < 0.25)
-    {
         baby = select_genome()->clone();
-    }
     else
     {
         // 75% of the time do crossover
@@ -146,13 +132,9 @@ Genome *Species::give_me_baby(std::vector<ConnectionHistory *> innovation_histor
 
         // The crossover function expects the highest fitness parent to be the object and the lowest as the argument
         if (parent1->fitness < parent2->fitness)
-        {
             baby = parent2->crossover(parent1);
-        }
         else
-        {
             baby = parent1->crossover(parent2);
-        }
     }
 
     baby->mutate(innovation_history);
@@ -163,18 +145,14 @@ Genome *Species::select_genome()
 {
     float fitness_sum = 0;
     for (size_t i = 0; i < genomes.size(); ++i)
-    {
         fitness_sum += genomes[i]->fitness;
-    }
 
     float running_sum = 0;
     for (size_t i = 0; i < genomes.size(); ++i)
     {
         running_sum += genomes[i]->fitness;
         if (running_sum > rand() / static_cast<float>(RAND_MAX) * fitness_sum)
-        {
             return genomes[i];
-        }
     }
 
     return genomes[0];
@@ -186,18 +164,14 @@ void Species::kill_genomes(const NeatConfig &config)
 
     // Ensure minimum species size
     if (survivals_nb < config.min_species_size)
-    {
         survivals_nb = config.min_species_size;
-    }
 
     // Ensure no memory issues
     if (survivals_nb < genomes.size())
     {
         auto last = genomes.begin() + survivals_nb;
         for (auto it = last; it != genomes.end(); ++it)
-        {
             delete *it; // Free the memory for the genomes to be removed
-        }
 
         genomes.erase(last, genomes.end()); // Remove excess genomes
     }
@@ -206,7 +180,5 @@ void Species::kill_genomes(const NeatConfig &config)
 void Species::fitness_sharing()
 {
     for (auto &g : genomes)
-    {
         g->fitness /= genomes.size();
-    }
 }

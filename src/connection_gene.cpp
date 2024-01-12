@@ -10,9 +10,7 @@ void ConnectionGene::mutate(const NeatConfig &config)
 {
     // Change the weight of the connection or disable/enable it
     if (randrange() < config.weight_replace_rate)
-    {
         weight = uniform(config.weight_min_value, config.weight_max_value);
-    }
     else if (randrange() < config.weight_mutate_rate)
     {
         // Otherwise, slightly change it
@@ -22,9 +20,7 @@ void ConnectionGene::mutate(const NeatConfig &config)
     }
 
     if (randrange() < config.enabled_mutate_rate)
-    {
         enabled = !enabled;
-    }
 }
 
 bool ConnectionGene::is_equal(ConnectionGene *other)

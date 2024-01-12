@@ -22,12 +22,8 @@ void Node::activate()
 void Node::propagate_output()
 {
     for (auto &c : output_connections)
-    {
         if (c->enabled)
-        {
             c->to_node->input_sum += c->weight * output_value;
-        }
-    }
 }
 
 void Node::mutate(const NeatConfig &config, bool is_bias_node)
@@ -35,9 +31,7 @@ void Node::mutate(const NeatConfig &config, bool is_bias_node)
     if (is_bias_node)
     {
         if (randrange() < config.bias_replace_rate)
-        {
             output_value = uniform(config.bias_min_value, config.bias_max_value);
-        }
         else if (randrange() < config.bias_mutate_rate)
         {
             output_value += normal(config.bias_init_mean, config.bias_init_stdev) / 50;
@@ -66,29 +60,19 @@ void Node::mutate(const NeatConfig &config, bool is_bias_node)
 bool Node::is_connected_to(Node *node)
 {
     if (node->layer == layer)
-    {
         return false;
-    }
 
     if (node->layer < layer)
     {
         for (auto &c : node->output_connections)
-        {
             if (c->to_node == this)
-            {
                 return true;
-            }
-        }
     }
     else
     {
         for (auto &c : output_connections)
-        {
             if (c->to_node == node)
-            {
                 return true;
-            }
-        }
     }
 
     return false;
@@ -103,10 +87,8 @@ bool Node::is_equal(Node *other)
     {
         bool found = false;
         for (auto &connection2 : other->output_connections)
-        {
             if (connection1->is_equal(connection2))
                 found = true;
-        }
         if (found == false)
             return false;
     }
