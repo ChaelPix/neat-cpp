@@ -65,7 +65,7 @@ double leaky_relu(double x)
  */
 double prelu(double x)
 {
-    double alpha = 0.01;
+    double alpha = 0.1;
     return x > 0 ? x : alpha * x;
 }
 

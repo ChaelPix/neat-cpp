@@ -15,14 +15,14 @@
 class Population
 {
 public:
-    const NeatConfig config;                           // NEAT configuration settings.
-    std::vector<Genome *> genomes;                     // List of genomes in the population.
-    Genome *best_genome;                               // Best genome in the population.
-    int generation;                                    // Current generation number.
-    double best_fitness;                               // Fitness of the best genome.
-    double average_fitness;                            // Average fitness of the population.
-    std::vector<ConnectionHistory> innovation_history; // List of connection history to track innovations.
-    std::vector<Species *> species;                    // List of species within the population.
+    const NeatConfig config;                             // NEAT configuration settings.
+    std::vector<Genome *> genomes;                       // List of genomes in the population.
+    Genome *best_genome;                                 // Best genome in the population.
+    int generation;                                      // Current generation number.
+    double best_fitness;                                 // Fitness of the best genome.
+    double average_fitness;                              // Average fitness of the population.
+    std::vector<ConnectionHistory *> innovation_history; // List of connection history to track innovations.
+    std::vector<Species *> species;                      // List of species within the population.
 
     /**
      * @brief Constructor for the Population class.

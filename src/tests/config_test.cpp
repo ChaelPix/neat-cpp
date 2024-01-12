@@ -5,6 +5,8 @@
 class ConfigTest : public ::testing::Test
 {
 protected:
+    std::string temp_file_name;
+
     void SetUp() override
     {
         // You can create temporary files for testing if needed
@@ -17,8 +19,6 @@ protected:
         // Remove any temporary files or cleanup after the test if needed
         remove(temp_file_name.c_str());
     }
-
-    std::string temp_file_name;
 };
 
 // Helper function to create a temporary config file with the given content
@@ -91,44 +91,44 @@ TEST_F(ConfigTest, ValidConfigFile)
     NeatConfig config = load_config_from_file(temp_file_name);
 
     // Assert specific values from the loaded config
-    EXPECT_EQ(config.population_size, 50);
-    EXPECT_DOUBLE_EQ(config.fitness_threshold, 100);
-    EXPECT_FALSE(config.no_fitness_termination);
-    EXPECT_TRUE(config.reset_on_extinction);
-    EXPECT_EQ(config.activation_default, "sigmoid");
-    EXPECT_EQ(config.activation_mutate_rate, 0.1);
-    EXPECT_EQ(config.num_inputs, 10);
-    EXPECT_EQ(config.num_outputs, 2);
-    EXPECT_EQ(config.bias_init_mean, 0.0);
-    EXPECT_EQ(config.bias_init_type, "normal");
-    EXPECT_EQ(config.bias_init_stdev, 1.0);
-    EXPECT_EQ(config.bias_max_value, 1.0);
-    EXPECT_EQ(config.bias_min_value, -1.0);
-    EXPECT_EQ(config.bias_mutate_rate, 0.5);
-    EXPECT_EQ(config.bias_replace_rate, 0.1);
-    EXPECT_EQ(config.compatibility_disjoint_coefficient, 1.0);
-    EXPECT_EQ(config.compatibility_weight_coefficient, 0.5);
-    EXPECT_EQ(config.conn_add_prob, 0.1);
-    EXPECT_EQ(config.conn_delete_prob, 0.0);
-    EXPECT_EQ(config.enabled_default, true);
-    EXPECT_EQ(config.enabled_mutate_rate, 0.1);
-    EXPECT_EQ(config.initial_connections, "full");
-    EXPECT_EQ(config.node_add_prob, 0.1);
-    EXPECT_EQ(config.node_delete_prob, 0.0);
-    EXPECT_EQ(config.weight_init_mean, 0.0);
-    EXPECT_EQ(config.weight_init_stdev, 1.0);
-    EXPECT_EQ(config.weight_init_type, "normal");
-    EXPECT_EQ(config.weight_max_value, 1.0);
-    EXPECT_EQ(config.weight_min_value, -1.0);
-    EXPECT_EQ(config.weight_mutate_rate, 0.9);
-    EXPECT_EQ(config.weight_replace_rate, 0.1);
-    EXPECT_EQ(config.max_stagnation, 15);
-    EXPECT_EQ(config.species_elitism, 2);
-    EXPECT_EQ(config.elitism, 2);
-    EXPECT_EQ(config.survival_threshold, 0.2);
-    EXPECT_EQ(config.min_species_size, 2);
-    EXPECT_EQ(config.compatibility_threshold, 3.0);
-    EXPECT_EQ(config.bad_species_threshold, 0.25);
+    ASSERT_EQ(config.population_size, 50);
+    ASSERT_DOUBLE_EQ(config.fitness_threshold, 100);
+    ASSERT_TRUE(config.no_fitness_termination);
+    ASSERT_TRUE(config.reset_on_extinction);
+    ASSERT_EQ(config.activation_default, "sigmoid");
+    ASSERT_EQ(config.activation_mutate_rate, 0.1);
+    ASSERT_EQ(config.num_inputs, 10);
+    ASSERT_EQ(config.num_outputs, 2);
+    ASSERT_EQ(config.bias_init_mean, 0.0);
+    ASSERT_EQ(config.bias_init_type, "normal");
+    ASSERT_EQ(config.bias_init_stdev, 1.0);
+    ASSERT_EQ(config.bias_max_value, 1.0);
+    ASSERT_EQ(config.bias_min_value, -1.0);
+    ASSERT_EQ(config.bias_mutate_rate, 0.5);
+    ASSERT_EQ(config.bias_replace_rate, 0.1);
+    ASSERT_EQ(config.compatibility_disjoint_coefficient, 1.0);
+    ASSERT_EQ(config.compatibility_weight_coefficient, 0.5);
+    ASSERT_EQ(config.conn_add_prob, 0.1);
+    ASSERT_EQ(config.conn_delete_prob, 0.0);
+    ASSERT_EQ(config.enabled_default, true);
+    ASSERT_EQ(config.enabled_mutate_rate, 0.1);
+    ASSERT_EQ(config.initial_connections, "full");
+    ASSERT_EQ(config.node_add_prob, 0.1);
+    ASSERT_EQ(config.node_delete_prob, 0.0);
+    ASSERT_EQ(config.weight_init_mean, 0.0);
+    ASSERT_EQ(config.weight_init_stdev, 1.0);
+    ASSERT_EQ(config.weight_init_type, "normal");
+    ASSERT_EQ(config.weight_max_value, 1.0);
+    ASSERT_EQ(config.weight_min_value, -1.0);
+    ASSERT_EQ(config.weight_mutate_rate, 0.9);
+    ASSERT_EQ(config.weight_replace_rate, 0.1);
+    ASSERT_EQ(config.max_stagnation, 15);
+    ASSERT_EQ(config.species_elitism, 2);
+    ASSERT_EQ(config.elitism, 2);
+    ASSERT_EQ(config.survival_threshold, 0.2);
+    ASSERT_EQ(config.min_species_size, 2);
+    ASSERT_EQ(config.compatibility_threshold, 3.0);
+    ASSERT_EQ(config.bad_species_threshold, 0.25);
 }
 
 TEST_F(ConfigTest, UnknownKeyInConfig)
@@ -147,5 +147,5 @@ TEST_F(ConfigTest, UnknownKeyInConfig)
     std::string output = testing::internal::GetCapturedStderr();
 
     // Assert that an unknown key prints an error message
-    EXPECT_TRUE(output.find("Unknown key: unknown_key") != std::string::npos);
+    ASSERT_TRUE(output.find("Unknown key: unknown_key") != std::string::npos);
 }

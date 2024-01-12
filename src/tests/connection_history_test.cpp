@@ -37,15 +37,15 @@ protected:
 
     void testInit()
     {
-        EXPECT_EQ(connectionHistory->from_node, fromNode);
-        EXPECT_EQ(connectionHistory->to_node, toNode);
-        EXPECT_EQ(connectionHistory->innovation_nbs, innovationNbs);
+        ASSERT_EQ(connectionHistory->from_node, fromNode);
+        ASSERT_EQ(connectionHistory->to_node, toNode);
+        ASSERT_EQ(connectionHistory->innovation_nbs, innovationNbs);
     }
 
     void testMatchesWithExistingConnection()
     {
         bool result = connectionHistory->matches(genome, fromNode, toNode);
-        EXPECT_TRUE(result);
+        ASSERT_TRUE(result);
     }
 
     void testMatchesWithNonExistingConnection()
@@ -53,7 +53,7 @@ protected:
         Node *node = new Node(3, "relu", 2);
         bool result = connectionHistory->matches(genome, fromNode, node);
         delete node;
-        EXPECT_FALSE(result);
+        ASSERT_FALSE(result);
     }
 
     void testMatchesWithNotSameGenome()
@@ -62,7 +62,7 @@ protected:
         ConnectionHistory *otherConnectionHistory = new ConnectionHistory(fromNode, toNode, 1, innovationNbs);
         bool result = otherConnectionHistory->matches(genome, fromNode, toNode);
         delete otherConnectionHistory;
-        EXPECT_FALSE(result);
+        ASSERT_FALSE(result);
     }
 };
 

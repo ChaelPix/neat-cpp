@@ -1,7 +1,7 @@
 #ifndef ACTIVATION_FUNCTIONS_H
 #define ACTIVATION_FUNCTIONS_H
 
-using ActivationFunctions = std::string;
+using ActivationFunction = std::string;
 
 double step(double x);
 double sigmoid(double x);

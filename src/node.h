@@ -20,7 +20,7 @@ public:
     double output_value;                              // Output value after activation.
     std::vector<ConnectionGene *> output_connections; // List of outgoing connections.
     int layer;                                        // Layer to which the node belongs.
-    ActivationFunctions activation_function;          // Activation function of the node.
+    ActivationFunction activation_function;           // Activation function of the node.
 
     /**
      * @brief Constructor for the Node class.
@@ -28,7 +28,7 @@ public:
      * @param activation_function Activation function of the node.
      * @param layer Layer to which the node belongs (default is 0).
      */
-    Node(int id, ActivationFunctions activation_function, int layer = 0);
+    Node(int id, ActivationFunction activation_function, int layer = 0);
 
     /**
      * @brief Activate the node using its activation function.
@@ -55,6 +55,13 @@ public:
     bool is_connected_to(Node *node);
 
     /**
+     * @brief Compare two nodes.
+     * @param other The node to compare with it.
+     * @return True if the nodes are the same and connection genes, otherwise false.
+     */
+    bool is_equal(Node *other);
+
+    /**
      * @brief Creates a clone of the node.
      * @return Pointer to the cloned node.
      */
@@ -66,7 +73,7 @@ private:
      * @param activation_function Activation function specified by the enum.
      * @return Pointer to the activation function.
      */
-    ActivationFunctionPointer get_function(ActivationFunctions function);
+    ActivationFunctionPointer get_function(ActivationFunction function);
 };
 
 #endif

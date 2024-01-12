@@ -8,7 +8,7 @@
 #include "connection_gene.h"
 #include "node.h"
 
-Node::Node(int id, ActivationFunctions activation_function, int layer) : id(id), input_sum(0), output_value(0), layer(layer), activation_function(activation_function) {}
+Node::Node(int id, ActivationFunction activation_function, int layer) : id(id), input_sum(0), output_value(0), layer(layer), activation_function(activation_function) {}
 
 void Node::activate()
 {
@@ -47,7 +47,7 @@ void Node::mutate(const NeatConfig &config, bool is_bias_node)
 
     if (randrange() < config.activation_mutate_rate)
     {
-        std::vector<ActivationFunctions> activations_functions = {
+        std::vector<ActivationFunction> activations_functions = {
             "step",
             "sigmoid",
             "tanh",
@@ -58,7 +58,7 @@ void Node::mutate(const NeatConfig &config, bool is_bias_node)
             "softmax",
             "linear",
             "swish"};
-        ActivationFunctions random_function = activations_functions[floor(randrange() * activations_functions.size())];
+        ActivationFunction random_function = activations_functions[floor(randrange() * activations_functions.size())];
         activation_function = random_function;
     }
 }
@@ -94,59 +94,58 @@ bool Node::is_connected_to(Node *node)
     return false;
 }
 
+bool Node::is_equal(Node *other)
+{
+    if (id != other->id || activation_function != other->activation_function || layer != other->layer)
+        return false;
+
+    for (auto &connection1 : output_connections)
+    {
+        bool found = false;
+        for (auto &connection2 : other->output_connections)
+        {
+            if (connection1->is_equal(connection2))
+                found = true;
+        }
+        if (found == false)
+            return false;
+    }
+
+    return true;
+}
+
 Node *Node::clone()
 {
     return new Node(id, activation_function, layer);
 }
 
-ActivationFunctionPointer Node::get_function(ActivationFunctions function)
+ActivationFunctionPointer Node::get_function(ActivationFunction function)
 {
     if (activation_function == "step")
-    {
         return step;
-    }
     else if (activation_function == "sigmoid")
-    {
         return sigmoid;
-    }
     else if (activation_function == "tanh")
-    {
         return tanh;
-    }
     else if (activation_function == "relu")
-    {
         return relu;
-    }
     else if (activation_function == "leaky_relu")
-    {
         return leaky_relu;
-    }
     else if (activation_function == "prelu")
-    {
         return prelu;
-    }
     else if (activation_function == "elu")
-    {
         return elu;
-    }
     else if (activation_function == "softmax")
-    {
         return softmax;
-    }
     else if (activation_function == "linear")
-    {
         return linear;
-    }
     else if (activation_function == "swish")
-    {
         return swish;
-    }
     else if (activation_function == "swish")
-    {
         return swish;
-    }
     else
     {
+        printf("Unknow activation function for node.");
         return sigmoid;
     }
 }

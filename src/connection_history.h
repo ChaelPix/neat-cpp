@@ -23,7 +23,7 @@ public:
      * @param innovation_nb Innovation number of the connection.
      * @param innovation_nbs List of innovation numbers in the genome when the connection was added.
      */
-    ConnectionHistory(Node *from_node, Node *to_node, int innovation_nb, std::vector<int> &innovation_nbs);
+    ConnectionHistory(Node *from_node, Node *to_node, int innovation_nb, std::vector<int> innovation_nbs);
 
     /**
      * @brief Checks if the connection history matches a specific genome, source node, and target node.

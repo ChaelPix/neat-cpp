@@ -34,6 +34,13 @@ public:
     void mutate(const NeatConfig &config);
 
     /**
+     * @brief Compare two connection genes.
+     * @param other The genes to compare with it.
+     * @return True if the genes are the same and connection genes, otherwise false.
+     */
+    bool is_equal(ConnectionGene *other);
+
+    /**
      * @brief Creates a clone of the connection gene with specified source and target nodes.
      * @param from Pointer to the new source node.
      * @param to Pointer to the new target node.

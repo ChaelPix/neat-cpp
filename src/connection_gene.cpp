@@ -27,6 +27,11 @@ void ConnectionGene::mutate(const NeatConfig &config)
     }
 }
 
+bool ConnectionGene::is_equal(ConnectionGene *other)
+{
+    return from_node == other->from_node && to_node == other->to_node && weight == other->weight && innovation_nb == other->innovation_nb && enabled == other->enabled;
+}
+
 ConnectionGene *ConnectionGene::clone(Node *from, Node *to)
 {
     return new ConnectionGene(from, to, weight, innovation_nb, enabled);

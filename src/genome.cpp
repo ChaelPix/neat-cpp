@@ -29,7 +29,7 @@ std::string generate_uid(int size)
     return uid;
 }
 
-int next_connection_nb = 1;
+int next_innovation_nb = 1;
 
 Genome::Genome(){};
 
@@ -77,7 +77,7 @@ Genome::~Genome()
     }
 }
 
-void Genome::fully_connect(std::vector<ConnectionHistory> &innovation_history)
+void Genome::fully_connect(std::vector<ConnectionHistory *> innovation_history)
 {
     for (int i = 0; i < inputs; ++i)
     {
@@ -207,7 +207,7 @@ void Genome::generate_network()
     }
 }
 
-void Genome::add_node(std::vector<ConnectionHistory> &innovation_history)
+void Genome::add_node(std::vector<ConnectionHistory *> innovation_history)
 {
     // Pick a random connection to create a node between
     if (genes.empty())
@@ -336,7 +336,7 @@ void Genome::remove_node()
     }
 }
 
-void Genome::add_connection(std::vector<ConnectionHistory> &innovation_history)
+void Genome::add_connection(std::vector<ConnectionHistory *> innovation_history)
 {
     // Cannot add a connection to a fully connected network
     if (fully_connected())
@@ -423,19 +423,19 @@ double Genome::new_connection_weight() const
     return weight;
 }
 
-int Genome::get_innovation_number(std::vector<ConnectionHistory> &innovation_history, Node *from_node, Node *to_node) const
+int Genome::get_innovation_number(std::vector<ConnectionHistory *> innovation_history, Node *from_node, Node *to_node) const
 {
     bool is_new = true;
-    int connection_innovation_nb = next_connection_nb;
+    int connection_innovation_nb = next_innovation_nb;
 
     for (auto &history : innovation_history)
     {
         // For each previous mutation
-        if (history.matches(this, from_node, to_node))
+        if (history->matches(this, from_node, to_node))
         {
             // If a match is found
             is_new = false; // It's not a new mutation
-            connection_innovation_nb = history.innovation_nb;
+            connection_innovation_nb = history->innovation_nb;
             break;
         }
     }
@@ -451,8 +451,8 @@ int Genome::get_innovation_number(std::vector<ConnectionHistory> &innovation_his
         }
 
         // Then, add this mutation to the innovation history
-        innovation_history.emplace_back(from_node, to_node, connection_innovation_nb, innovation_numbers);
-        ++next_connection_nb;
+        innovation_history.push_back(new ConnectionHistory(from_node, to_node, connection_innovation_nb, innovation_numbers));
+        ++next_innovation_nb;
     }
 
     return connection_innovation_nb;
@@ -487,7 +487,7 @@ bool Genome::fully_connected() const
     return max_connections <= static_cast<int>(genes.size());
 }
 
-void Genome::mutate(std::vector<ConnectionHistory> &innovation_history)
+void Genome::mutate(std::vector<ConnectionHistory *> innovation_history)
 {
     if (genes.empty())
     {
@@ -599,14 +599,39 @@ Genome *Genome::crossover(Genome *parent) const
     return child;
 }
 
+bool Genome::is_equal(Genome *other)
+{
+    // Compare the number of nodes
+    if (nodes.size() != other->nodes.size())
+        return false;
+
+    // Compare the number of genes
+    if (genes.size() != other->genes.size())
+        return false;
+
+    // Compare each node
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        if (!nodes[i]->is_equal(other->nodes[i]))
+            return false;
+    }
+
+    // Compare each gene
+    for (size_t i = 0; i < genes.size(); ++i)
+    {
+        if (!genes[i]->is_equal(other->genes[i]))
+            return false;
+    }
+
+    return true;
+}
+
 int Genome::matching_gene(Genome *parent, int innovation) const
 {
     for (size_t i = 0; i < parent->genes.size(); ++i)
     {
         if (parent->genes[i]->innovation_nb == innovation)
-        {
-            return static_cast<int>(i);
-        }
+            return i;
     }
     return -1; // No matching gene found
 }
@@ -684,20 +709,22 @@ void Genome::save(const std::string &file_path)
     }
 }
 
-Genome Genome::load(const std::string &file_path)
+Genome *Genome::load(const std::string &file_path)
 {
     // Load the saved genome
-    Genome loadedGenome;
+    Genome *loadedGenome = new Genome;
     std::ifstream file(file_path, std::ios::binary);
     if (file.is_open())
     {
-        file.read(reinterpret_cast<char *>(&loadedGenome), sizeof(loadedGenome));
+        file.read(reinterpret_cast<char *>(loadedGenome), sizeof(*loadedGenome));
         file.close();
         std::cout << "Genome loaded from '" << file_path << "'" << std::endl;
     }
     else
     {
         std::cerr << "Failed to load genome from '" << file_path << "'" << std::endl;
+        delete loadedGenome; // Cleanup in case of failure
+        loadedGenome = nullptr;
     }
     return loadedGenome;
 }

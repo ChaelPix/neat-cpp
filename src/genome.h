@@ -36,7 +36,7 @@ public:
      * @brief Fully connects the genome's neural network.
      * @param innovation_history List of connection history for innovation tracking.
      */
-    void fully_connect(std::vector<ConnectionHistory> &innovation_history);
+    void fully_connect(std::vector<ConnectionHistory *> innovation_history);
 
     /**
      * @brief Retrieves a node based on its ID.
@@ -66,7 +66,7 @@ public:
      * @brief Adds a node to the genome.
      * @param innovation_history List of connection history for innovation tracking.
      */
-    void add_node(std::vector<ConnectionHistory> &innovation_history);
+    void add_node(std::vector<ConnectionHistory *> innovation_history);
 
     /**
      * @brief Removes a node from the genome.
@@ -77,7 +77,7 @@ public:
      * @brief Adds a connection to the genome.
      * @param innovation_history List of connection history for innovation tracking.
      */
-    void add_connection(std::vector<ConnectionHistory> &innovation_history);
+    void add_connection(std::vector<ConnectionHistory *> innovation_history);
 
     /**
      * @brief Removes a connection from the genome.
@@ -97,7 +97,7 @@ public:
      * @param to_node Pointer to the target node.
      * @return Innovation number for the connection.
      */
-    int get_innovation_number(std::vector<ConnectionHistory> &innovation_history, Node *from_node, Node *to_node) const;
+    int get_innovation_number(std::vector<ConnectionHistory *> innovation_history, Node *from_node, Node *to_node) const;
 
     /**
      * @brief Checks if the genome is fully connected.
@@ -109,7 +109,7 @@ public:
      * @brief Mutates the genome based on configuration settings.
      * @param innovation_history List of connection history for innovation tracking.
      */
-    void mutate(std::vector<ConnectionHistory> &innovation_history);
+    void mutate(std::vector<ConnectionHistory *> innovation_history);
 
     /**
      * @brief Performs crossover with another genome to create a child genome.
@@ -125,6 +125,13 @@ public:
      * @return Index of the matching gene, -1 if not found.
      */
     int matching_gene(Genome *parent, int innovation) const;
+
+    /**
+     * @brief Compare two genomes.
+     * @param other The genome to compare with it.
+     * @return True if the genomes are the same and connection genes, otherwise false.
+     */
+    bool is_equal(Genome *other);
 
     /**
      * @brief Creates a clone of the genome.
@@ -149,7 +156,7 @@ public:
      * @param file_path Path to the file.
      * @return Loaded genome.
      */
-    static Genome load(const std::string &file_path);
+    static Genome *load(const std::string &file_path);
 };
 
 #endif // GENOME_H

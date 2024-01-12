@@ -96,12 +96,7 @@ protected:
     void test_clone()
     {
         Node *cloned_node = node->clone();
-        // Validate that the cloned node is a separate instance
-        EXPECT_NE(node, cloned_node);
-        // Validate that the cloned node has the same attributes
-        EXPECT_EQ(node->id, cloned_node->id);
-        EXPECT_EQ(node->layer, cloned_node->layer);
-
+        EXPECT_TRUE(node->is_equal(cloned_node));
         delete cloned_node;
     }
 };

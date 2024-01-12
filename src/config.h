@@ -26,7 +26,7 @@ struct NeatConfig
     bool reset_on_extinction;
 
     // ======== GENOME =========== //
-    ActivationFunctions activation_default;
+    ActivationFunction activation_default;
     double activation_mutate_rate;
     int num_inputs;
     int num_outputs; // enter long | enter short | close long | close short | wait

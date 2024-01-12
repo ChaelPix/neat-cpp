@@ -15,7 +15,7 @@ Population::Population(const NeatConfig &config) : config(config)
     for (int i = 0; i < config.population_size; ++i)
     {
         Genome *genome = new Genome(config);
-        // genome->mutate(innovation_history);
+        genome->mutate(innovation_history);
         genome->generate_network();
 
         if (config.initial_connections == "full")

@@ -4,7 +4,7 @@
 #include "genome.h"
 #include "connection_history.h"
 
-ConnectionHistory::ConnectionHistory(Node *from_node, Node *to_node, int innovation_nb, std::vector<int> &innovation_nbs)
+ConnectionHistory::ConnectionHistory(Node *from_node, Node *to_node, int innovation_nb, std::vector<int> innovation_nbs)
     : from_node(from_node), to_node(to_node), innovation_nb(innovation_nb), innovation_nbs(innovation_nbs) {}
 
 bool ConnectionHistory::matches(const Genome *genome, Node *from_node, Node *to_node)

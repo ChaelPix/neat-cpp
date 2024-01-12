@@ -14,15 +14,15 @@ TEST_F(MathUtilsTest, Randrange)
 {
     // Test within range [0.0, 1.0]
     double result = randrange();
-    EXPECT_GE(result, 0.0);
-    EXPECT_LE(result, 1.0);
+    ASSERT_GE(result, 0.0);
+    ASSERT_LE(result, 1.0);
 
     // Test within custom range [min, max]
     double min = -5.0;
     double max = 5.0;
     result = randrange(min, max);
-    EXPECT_GE(result, min);
-    EXPECT_LE(result, max);
+    ASSERT_GE(result, min);
+    ASSERT_LE(result, max);
 }
 
 // Test cases for uniform function
@@ -32,8 +32,8 @@ TEST_F(MathUtilsTest, Uniform)
     double min = -5.0;
     double max = 5.0;
     double result = uniform(min, max);
-    EXPECT_GE(result, min);
-    EXPECT_LE(result, max);
+    ASSERT_GE(result, min);
+    ASSERT_LE(result, max);
 }
 
 // Test cases for normal function
@@ -43,11 +43,11 @@ TEST_F(MathUtilsTest, Normal)
     double mean = 0.0;
     double stdev = 1.0;
     double result = normal(mean, stdev);
-    EXPECT_TRUE(std::isfinite(result));
+    ASSERT_TRUE(std::isfinite(result));
 
     // Test with arbitrary mean and standard deviation
     mean = 10.0;
     stdev = 3.0;
     result = normal(mean, stdev);
-    EXPECT_TRUE(std::isfinite(result));
+    ASSERT_TRUE(std::isfinite(result));
 }

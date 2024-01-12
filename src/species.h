@@ -75,7 +75,7 @@ public:
      * @param innovation_history List of connection history to track innovations.
      * @return The baby genome.
      */
-    Genome *give_me_baby(std::vector<ConnectionHistory> &innovation_history);
+    Genome *give_me_baby(std::vector<ConnectionHistory *> innovation_history);
 
     /**
      * @brief Selects a genome from the species based on its fitness.
