@@ -383,7 +383,7 @@ int Genome::get_innovation_number(std::vector<ConnectionHistory *> &innovation_h
     for (auto &history : innovation_history)
     {
         // For each previous mutation
-        if (history->matches(this, from_node, to_node))
+        if (history->matches(from_node, to_node))
         {
             // If a match is found
             is_new = false; // It's not a new mutation

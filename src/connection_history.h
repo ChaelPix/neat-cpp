@@ -26,12 +26,11 @@ public:
 
     /**
      * @brief Returns whether the genome matches the original genome and the connection is between the same nodes
-     * @param genome Pointer to the genome to check against.
      * @param from_node Pointer to the source node.
      * @param to_node Pointer to the target node.
      * @return True if the connection history matches, false otherwise.
      */
-    bool matches(const Genome *genome, Node *from_node, Node *to_node);
+    bool matches(Node *from_node, Node *to_node);
 };
 
 #endif
