@@ -41,14 +41,14 @@ protected:
 
     void testMatchesWithExistingConnection()
     {
-        bool result = connectionHistory->matches(genome, fromNode, toNode);
+        bool result = connectionHistory->matches(fromNode, toNode);
         ASSERT_TRUE(result);
     }
 
     void testMatchesWithNonExistingConnection()
     {
         Node *node = new Node(3, "relu", 2);
-        bool result = connectionHistory->matches(genome, fromNode, node);
+        bool result = connectionHistory->matches(fromNode, node);
         delete node;
         ASSERT_FALSE(result);
     }

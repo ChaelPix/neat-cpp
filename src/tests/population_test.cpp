@@ -153,6 +153,8 @@ TEST_F(PopulationTest, KillStagnantSpecies)
     ASSERT_EQ(remainingSpecies.size(), 2);
     ASSERT_EQ(remainingSpecies[0], speciesToKeep1);
     ASSERT_EQ(remainingSpecies[1], speciesToKeep2);
+
+    // Assert the genomes of the stagnant species are removed
     ASSERT_TRUE(std::find(p->genomes.begin(), p->genomes.end(), genome1) != p->genomes.end());
     ASSERT_TRUE(std::find(p->genomes.begin(), p->genomes.end(), genome2) != p->genomes.end());
     ASSERT_TRUE(std::find(p->genomes.begin(), p->genomes.end(), genome3) == p->genomes.end());

@@ -128,11 +128,6 @@ void Population::reproduce_species()
     for (auto &g : genomes)
         g->generate_network();
     set_best_genome();
-
-    // Check the number of genomes for each species
-    // species.erase(std::remove_if(species.begin(), species.end(), [this](const Species *s)
-    //                              { return s->genomes.size() < config.population_size; }),
-    //               species.end());
 }
 
 void Population::sort_species()
