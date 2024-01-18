@@ -20,7 +20,6 @@ public:
      * @param from_node Pointer to the source node.
      * @param to_node Pointer to the target node.
      * @param innovation_nb Innovation number of the connection.
-     * @param innovation_nbs List of innovation numbers in the genome when the connection was added.
      */
     ConnectionHistory(Node *from_node, Node *to_node, int innovation_nb);
 
