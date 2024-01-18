@@ -44,7 +44,7 @@ protected:
             for (int j = 0; j < num_outputs; ++j)
             {
                 Node *node_output = new Node(j, "sigmoid");
-                connections.push_back(new ConnectionHistory(node_input, node_output, innovation_nb, innovation_nbs));
+                connections.push_back(new ConnectionHistory(node_input, node_output, innovation_nb));
                 ++innovation_nb;
             }
         }
@@ -146,7 +146,8 @@ TEST_F(SpeciesTest, AverageWeightDifference)
 
     // Test average weight diff with two genomes a little bit different
     Genome *otherGenomeLittleDifferent = genome->clone();
-    otherGenomeLittleDifferent->mutate({new ConnectionHistory(nullptr, nullptr, 10, {})}); // Adjust the parameters as needed
+    std::vector<ConnectionHistory *> history = {new ConnectionHistory(nullptr, nullptr, 10)};
+    otherGenomeLittleDifferent->mutate(history); // Adjust the parameters as needed
     double resultLittleDifferent = species->average_weight_diff(genome, otherGenomeLittleDifferent);
     ASSERT_GT(resultLittleDifferent, 0.0);
     delete otherGenomeLittleDifferent;
@@ -157,14 +158,6 @@ TEST_F(SpeciesTest, SortGenomesStagnationIncrement)
     species->stagnation = 0;
     species->sort_genomes();
     ASSERT_EQ(species->stagnation, 1);
-}
-
-TEST_F(SpeciesTest, SortGenomesWithNoGenomes)
-{
-    species->stagnation = 0;
-    species->genomes = {}; // Set genomes to an empty vector
-    species->sort_genomes();
-    ASSERT_EQ(species->stagnation, 200); // Adjust the expected value based on your implementation
 }
 
 TEST_F(SpeciesTest, SortGenomesWithNewBestGenome)

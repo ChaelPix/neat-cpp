@@ -1,6 +1,5 @@
 #include <iostream>
-#include <cstdlib> // For rand function
-#include <cstdio>  // For printf function
+#include <cstdio> // For printf function
 #include <vector>
 #include <cmath>
 #include "src/math_utils.h"
@@ -8,20 +7,18 @@
 #include "src/genome.h"
 #include "src/population.h"
 
-// Define XOR inputs and expected outputs
 int expected = 100;
-std::vector<double> inputs = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+std::vector<double> inputs = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 // Assuming Genome has a fitness member variable
 void evaluate_genome(Genome *g, int generation)
 {
     std::vector<double> result = g->feed_forward(inputs);
-    g->fitness = abs(expected - result[0]);
+    g->fitness = 1 / abs(expected - result[0]);
 }
 
 void callback_generation(int generation)
 {
-    printf("Generation: %d\n", generation);
 }
 
 int main(int argc, char *argv[])
@@ -32,16 +29,19 @@ int main(int argc, char *argv[])
     // Initialize population
     Population *p = new Population(config);
 
-    // for (auto& g: p->genomes) {
-    //     g->print_genome();
-    // }
-
     // // Run NEAT algorithm
-    int generations = 100;
-    p->run(&evaluate_genome, generations, callback_generation);
-    // printf("Best genome : %f\n", p->best_genome->fitness);
+    int generations = 1000;
+    p->run(&evaluate_genome, generations, &callback_generation);
 
-    // delete p;
+    // Display the results of the best genome
+    std::vector<double> result = p->best_genome->feed_forward(inputs);
+    if (result[0] - expected >= 0)
+        printf("Solution found: %f\n", expected - 1 / p->best_genome->fitness);
+    else
+        printf("Solution found: %f\n", expected + 1 / p->best_genome->fitness);
+    p->best_genome->print_genome();
+
+    delete p;
 
     return 0;
 }

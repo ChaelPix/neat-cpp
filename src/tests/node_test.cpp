@@ -22,12 +22,12 @@ protected:
 
     void test_initialization()
     {
-        EXPECT_EQ(node->id, 1);
-        EXPECT_EQ(node->input_sum, 0);
-        EXPECT_EQ(node->output_value, 0);
-        EXPECT_EQ(node->output_connections.size(), 0);
-        EXPECT_EQ(node->layer, 1);
-        EXPECT_EQ(node->activation_function, "relu");
+        ASSERT_EQ(node->id, 1);
+        ASSERT_EQ(node->input_sum, 0);
+        ASSERT_EQ(node->output_value, 0);
+        ASSERT_EQ(node->output_connections.size(), 0);
+        ASSERT_EQ(node->layer, 1);
+        ASSERT_EQ(node->activation_function, "relu");
     }
 
     void test_activation()
@@ -37,7 +37,8 @@ protected:
         node->activate();
         node->propagate_output();
         // Output value should be updated
-        EXPECT_NE(node->output_value, 0);
+        ASSERT_NE(node->output_value, 0);
+        ASSERT_EQ(typeid(node->output_value), typeid(double));
     }
 
     void test_mutate()
@@ -47,19 +48,19 @@ protected:
         config.bias_replace_rate = 0.0;
         node->output_value = 0.0;
         node->mutate(config, true); // true indicates bias node
-        EXPECT_NE(node->output_value, 0.0);
+        ASSERT_NE(node->output_value, 0.0);
 
         // Test mutation of a non-bias node
         config.bias_mutate_rate = 0.0;
         config.bias_replace_rate = 1.0;
         node->output_value = 0.0;
         node->mutate(config, true);
-        EXPECT_NE(node->output_value, 0.0);
+        ASSERT_NE(node->output_value, 0.0);
 
         // Test activation mutation
         config.activation_mutate_rate = 1.0;
         node->mutate(config);
-        EXPECT_NE(node->activation_function, "relu");
+        ASSERT_NE(node->activation_function, "relu");
     }
 
     void test_is_connected_to()
@@ -69,22 +70,22 @@ protected:
         node->output_connections.push_back(new ConnectionGene(node, node1, 1.0, 1, true));
         node->output_connections.push_back(new ConnectionGene(node, node2, 1.0, 1, true));
         // Validate if the node is connected to the provided node
-        EXPECT_TRUE(node->is_connected_to(node1));
-        EXPECT_TRUE(node->is_connected_to(node2));
+        ASSERT_TRUE(node->is_connected_to(node1));
+        ASSERT_TRUE(node->is_connected_to(node2));
 
         Node *node3 = new Node(4, "tanh", 1);
         // Can't be connected if is on the same layer
-        EXPECT_FALSE(node->is_connected_to(node3));
+        ASSERT_FALSE(node->is_connected_to(node3));
 
         Node *node4 = new Node(4, "relu", 0);
         node4->output_connections.push_back(new ConnectionGene(node4, node, 1.0, 1, true));
         // Connected because of the connection gene
-        EXPECT_TRUE(node->is_connected_to(node4));
+        ASSERT_TRUE(node->is_connected_to(node4));
 
         Node *node5 = new Node(5, "softmax", 0);
         node5->output_connections = {};
         // Can't be connected if is on a previous layer and no connection gene
-        EXPECT_FALSE(node->is_connected_to(node5));
+        ASSERT_FALSE(node->is_connected_to(node5));
 
         delete node1;
         delete node2;
@@ -96,7 +97,7 @@ protected:
     void test_clone()
     {
         Node *cloned_node = node->clone();
-        EXPECT_TRUE(node->is_equal(cloned_node));
+        ASSERT_TRUE(node->is_equal(cloned_node));
         delete cloned_node;
     }
 };

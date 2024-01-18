@@ -52,7 +52,8 @@ void Node::mutate(const NeatConfig &config, bool is_bias_node)
             "softmax",
             "linear",
             "swish"};
-        ActivationFunction random_function = activations_functions[floor(randrange() * activations_functions.size())];
+        int random_index = floor(randrange() * activations_functions.size());
+        ActivationFunction random_function = activations_functions[random_index];
         activation_function = random_function;
     }
 }
@@ -108,7 +109,7 @@ ActivationFunctionPointer Node::get_function(ActivationFunction function)
     else if (activation_function == "sigmoid")
         return sigmoid;
     else if (activation_function == "tanh")
-        return tanh;
+        return tan_h;
     else if (activation_function == "relu")
         return relu;
     else if (activation_function == "leaky_relu")
@@ -121,8 +122,6 @@ ActivationFunctionPointer Node::get_function(ActivationFunction function)
         return softmax;
     else if (activation_function == "linear")
         return linear;
-    else if (activation_function == "swish")
-        return swish;
     else if (activation_function == "swish")
         return swish;
     else

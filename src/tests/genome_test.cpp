@@ -247,7 +247,7 @@ TEST_F(TestGenome, MatchingGene)
 {
     Genome *genome = new Genome(config);
     genome->fully_connect(connection_history);
-    int matchingGeneIndex = genome->matching_gene(genome, 74); // 74 because of incrementation of the global variable next_innovation_nb
+    int matchingGeneIndex = genome->matching_gene(genome, 68); // 68 because of incrementation of the global variable next_innovation_nb
 
     // Check if matching gene is found properly
     ASSERT_EQ(matchingGeneIndex, 0);

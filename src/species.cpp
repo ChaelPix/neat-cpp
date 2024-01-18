@@ -49,16 +49,12 @@ int Species::get_excess_disjoint_genes(Genome *genome1, Genome *genome2)
 {
     int matching = 0;
     for (auto &g1 : genome1->genes)
-    {
         for (auto &g2 : genome2->genes)
-        {
             if (g1->innovation_nb == g2->innovation_nb)
             {
                 matching++;
                 break;
             }
-        }
-    }
 
     return genome1->genes.size() + genome2->genes.size() - 2 * matching;
 }
@@ -71,17 +67,13 @@ float Species::average_weight_diff(Genome *genome1, Genome *genome2)
     int matching = 0;
     float total_diff = 0;
     for (auto &g1 : genome1->genes)
-    {
         for (auto &g2 : genome2->genes)
-        {
             if (g1->innovation_nb == g2->innovation_nb)
             {
                 matching++;
                 total_diff += std::abs(g1->weight - g2->weight);
                 break;
             }
-        }
-    }
 
     if (matching == 0)
         // Divide by 0 error
@@ -94,12 +86,6 @@ void Species::sort_genomes()
 {
     std::sort(genomes.begin(), genomes.end(), [](const Genome *g1, const Genome *g2)
               { return g1->fitness > g2->fitness; });
-
-    if (genomes.empty())
-    {
-        stagnation = 200;
-        return;
-    }
 
     if (genomes[0]->fitness > best_fitness)
     {
@@ -168,13 +154,7 @@ void Species::kill_genomes(const NeatConfig &config)
 
     // Ensure no memory issues
     if (survivals_nb < genomes.size())
-    {
-        auto last = genomes.begin() + survivals_nb;
-        for (auto it = last; it != genomes.end(); ++it)
-            delete *it; // Free the memory for the genomes to be removed
-
-        genomes.erase(last, genomes.end()); // Remove excess genomes
-    }
+        genomes.erase(genomes.begin() + survivals_nb, genomes.end());
 }
 
 void Species::fitness_sharing()

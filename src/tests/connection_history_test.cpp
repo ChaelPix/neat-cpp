@@ -3,8 +3,8 @@
 #include "../config.h"
 #include "../genome.h"
 #include "../node.h"
-#include "../connection_history.h"   // Include your connection_history.h file here
-#include "../activation_functions.h" // Include your activation_functions.h file here
+#include "../connection_history.h"
+#include "../activation_functions.h"
 
 class ConnectionHistoryTest : public ::testing::Test
 {
@@ -13,7 +13,6 @@ protected:
     Genome *genome;
     Node *fromNode;
     Node *toNode;
-    std::vector<int> innovationNbs;
     ConnectionHistory *connectionHistory;
 
     void SetUp() override
@@ -22,9 +21,8 @@ protected:
         genome = new Genome(config);
         fromNode = new Node(1, "sigmoid", 1);
         toNode = new Node(2, "sigmoid", 2);
-        innovationNbs = {1};
         genome->genes.emplace_back(new ConnectionGene(fromNode, toNode, 0.5, 1, true));
-        connectionHistory = new ConnectionHistory(fromNode, toNode, 1, innovationNbs);
+        connectionHistory = new ConnectionHistory(fromNode, toNode, 1);
     }
 
     void TearDown() override
@@ -39,7 +37,6 @@ protected:
     {
         ASSERT_EQ(connectionHistory->from_node, fromNode);
         ASSERT_EQ(connectionHistory->to_node, toNode);
-        ASSERT_EQ(connectionHistory->innovation_nbs, innovationNbs);
     }
 
     void testMatchesWithExistingConnection()
@@ -53,15 +50,6 @@ protected:
         Node *node = new Node(3, "relu", 2);
         bool result = connectionHistory->matches(genome, fromNode, node);
         delete node;
-        ASSERT_FALSE(result);
-    }
-
-    void testMatchesWithNotSameGenome()
-    {
-        std::vector<int> innovationNbs = {2};
-        ConnectionHistory *otherConnectionHistory = new ConnectionHistory(fromNode, toNode, 1, innovationNbs);
-        bool result = otherConnectionHistory->matches(genome, fromNode, toNode);
-        delete otherConnectionHistory;
         ASSERT_FALSE(result);
     }
 };
@@ -79,9 +67,4 @@ TEST_F(ConnectionHistoryTest, MatchesWithExistingConnection)
 TEST_F(ConnectionHistoryTest, MatchesWithNonExistingConnection)
 {
     testMatchesWithNonExistingConnection();
-}
-
-TEST_F(ConnectionHistoryTest, MatchesWithNotSameGenome)
-{
-    testMatchesWithNotSameGenome();
 }

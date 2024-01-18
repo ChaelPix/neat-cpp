@@ -11,10 +11,9 @@
 class ConnectionHistory
 {
 public:
-    Node *from_node;                 // Pointer to the source node.
-    Node *to_node;                   // Pointer to the target node.
-    int innovation_nb;               // Innovation number of the connection.
-    std::vector<int> innovation_nbs; // List of innovation numbers in the genome when the connection was added.
+    Node *from_node;   // Pointer to the source node.
+    Node *to_node;     // Pointer to the target node.
+    int innovation_nb; // Innovation number of the connection.
 
     /**
      * @brief Constructor for ConnectionHistory.
@@ -23,10 +22,10 @@ public:
      * @param innovation_nb Innovation number of the connection.
      * @param innovation_nbs List of innovation numbers in the genome when the connection was added.
      */
-    ConnectionHistory(Node *from_node, Node *to_node, int innovation_nb, std::vector<int> innovation_nbs);
+    ConnectionHistory(Node *from_node, Node *to_node, int innovation_nb);
 
     /**
-     * @brief Checks if the connection history matches a specific genome, source node, and target node.
+     * @brief Returns whether the genome matches the original genome and the connection is between the same nodes
      * @param genome Pointer to the genome to check against.
      * @param from_node Pointer to the source node.
      * @param to_node Pointer to the target node.

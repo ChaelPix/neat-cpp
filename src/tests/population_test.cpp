@@ -28,75 +28,75 @@ protected:
 
 TEST_F(PopulationTest, PopulationInitialization)
 {
-    Population *population = new Population(config);
-    ASSERT_EQ(population->genomes.size(), config.population_size);
-    ASSERT_EQ(population->species.size(), 0);
-    ASSERT_EQ(population->generation, 0);
+    Population *p = new Population(config);
+    ASSERT_EQ(p->genomes.size(), config.population_size);
+    ASSERT_EQ(p->species.size(), 0);
+    ASSERT_EQ(p->generation, 0);
 }
 
 TEST_F(PopulationTest, SetBestGenome)
 {
-    Population *population = new Population(config);
+    Population *p = new Population(config);
 
     // Assume best fitness is set to 10 for simplicity
-    population->best_fitness = 10;
+    p->best_fitness = 10;
 
     // Mock species and genomes
     Genome *genome = new Genome(config);
     genome->fitness = 20;
     Species *species = new Species(genome);
     species->genomes = {genome};
-    population->species = {species};
+    p->species = {species};
 
     // Set best genome
-    population->set_best_genome();
+    p->set_best_genome();
 
     // Assert that the best genome is set
-    ASSERT_EQ(population->best_genome, genome);
+    ASSERT_EQ(p->best_genome, genome);
 }
 
 TEST_F(PopulationTest, Speciate)
 {
-    Population *population = new Population(config);
+    Population *p = new Population(config);
 
     // Mock genomes
     Genome *genome1 = new Genome(config);
     Genome *genome2 = new Genome(config);
-    population->genomes = {genome1, genome2};
+    p->genomes = {genome1, genome2};
 
     // Mock species
     Species *species1 = new Species(genome1);
     Species *species2 = new Species(genome2);
-    population->species = {species1, species2};
+    p->species = {species1, species2};
 
     // Run speciation
-    population->speciate();
+    p->speciate();
 
     // Assert that genomes are grouped into species
-    ASSERT_GT(population->species.size(), 0);
+    ASSERT_GT(p->species.size(), 0);
 }
 
 TEST_F(PopulationTest, ReproduceSpecies)
 {
-    Population *population = new Population(config);
+    Population *p = new Population(config);
 
     // Mock species
     Genome *genome = new Genome(config);
     Species *species = new Species(genome);
-    population->species = {species};
+    p->species = {species};
 
     // Run reproduction
-    population->reproduce_species();
+    p->reproduce_species();
 
-    // Assert that the population's genomes are updated
-    ASSERT_EQ(population->generation, 1);
-    ASSERT_EQ(population->best_genome, genome);
-    ASSERT_EQ(population->genomes.size(), config.population_size);
+    // Assert that the p's genomes are updated
+    ASSERT_EQ(p->generation, 1);
+    ASSERT_EQ(p->best_genome, genome);
+    ASSERT_EQ(p->genomes.size(), config.population_size);
 }
 
 TEST_F(PopulationTest, SortSpecies)
 {
-    Population *population = new Population(config);
+    Population *p = new Population(config);
 
     // Mock species
     for (int i = 0; i < 5; ++i)
@@ -104,15 +104,15 @@ TEST_F(PopulationTest, SortSpecies)
         Genome *genome = new Genome(config);
         genome->fitness = random() % 100;
         Species *species = new Species(genome);
-        population->species.push_back(species);
+        p->species.push_back(species);
     }
 
     // Run species sorting
-    population->sort_species();
+    p->sort_species();
 
     // Assert species are sorted
-    const auto &speciesList = population->species;
-    ASSERT_EQ(population->species.size(), 5);
+    const auto &speciesList = p->species;
+    ASSERT_EQ(p->species.size(), 5);
 
     auto getBestFitness = [](const Species *s)
     { return s->best_fitness; };
@@ -122,34 +122,41 @@ TEST_F(PopulationTest, SortSpecies)
 
 TEST_F(PopulationTest, KillStagnantSpecies)
 {
-    Population *population = new Population(config);
+    Population *p = new Population(config);
+
+    // Mock genomes
+    Genome *genome1 = new Genome(config);
+    Genome *genome2 = new Genome(config);
+    Genome *genome3 = new Genome(config);
+    Genome *genome4 = new Genome(config);
 
     // Mock species
-    Species *speciesToKeep1 = new Species(new Genome(config));
+    Species *speciesToKeep1 = new Species(genome1);
+    Species *speciesToKeep2 = new Species(genome2);
+    Species *speciesToRemove1 = new Species(genome3);
+    Species *speciesToRemove2 = new Species(genome4);
+
+    // Set the stagnation
     speciesToKeep1->stagnation = 2;
-
-    Species *speciesToKeep2 = new Species(new Genome(config));
     speciesToKeep2->stagnation = 4;
-
-    Species *speciesToRemove1 = new Species(new Genome(config));
     speciesToRemove1->stagnation = 6;
-
-    Species *speciesToRemove2 = new Species(new Genome(config));
     speciesToRemove2->stagnation = 8;
 
-    population->species.push_back(speciesToKeep1);
-    population->species.push_back(speciesToKeep2);
-    population->species.push_back(speciesToRemove1);
-    population->species.push_back(speciesToRemove2);
+    p->genomes = {genome1, genome2, genome3, genome4};
+    p->species = {speciesToKeep1, speciesToKeep2, speciesToRemove1, speciesToRemove2};
 
     // Run killing stagnant species
-    population->kill_stagnant_species();
+    p->kill_stagnant_species();
 
     // Assert stagnant species are removed
-    const auto &remainingSpecies = population->species;
+    const auto &remainingSpecies = p->species;
     ASSERT_EQ(remainingSpecies.size(), 2);
     ASSERT_EQ(remainingSpecies[0], speciesToKeep1);
     ASSERT_EQ(remainingSpecies[1], speciesToKeep2);
+    ASSERT_TRUE(std::find(p->genomes.begin(), p->genomes.end(), genome1) != p->genomes.end());
+    ASSERT_TRUE(std::find(p->genomes.begin(), p->genomes.end(), genome2) != p->genomes.end());
+    ASSERT_TRUE(std::find(p->genomes.begin(), p->genomes.end(), genome3) == p->genomes.end());
+    ASSERT_TRUE(std::find(p->genomes.begin(), p->genomes.end(), genome4) == p->genomes.end());
 
     // Cleanup
     delete speciesToKeep1;
@@ -160,29 +167,43 @@ TEST_F(PopulationTest, KillStagnantSpecies)
 
 TEST_F(PopulationTest, KillBadSpecies)
 {
-    Population *population = new Population(config);
+    Population *p = new Population(config);
+
+    // Mock genomes
+    Genome *genome1 = new Genome(config);
+    Genome *genome2 = new Genome(config);
+    Genome *genome3 = new Genome(config);
 
     // Mock species
-    Species *goodSpecies = new Species(new Genome(config));
-    goodSpecies->average_fitness = config.bad_species_threshold + 1;
+    Species *goodSpecies = new Species(genome1);
+    Species *badSpecies1 = new Species(genome2);
+    Species *badSpecies2 = new Species(genome3);
 
-    Species *badSpecies1 = new Species(new Genome(config));
-    badSpecies1->average_fitness = config.bad_species_threshold - 1;
+    // Mock average fitness
+    double average_fitness1 = 100.0;
+    double average_fitness2 = 3.0;
+    double average_fitness3 = 1.0;
 
-    Species *badSpecies2 = new Species(new Genome(config));
-    badSpecies2->average_fitness = config.bad_species_threshold - 2;
+    // Set average fitness
+    goodSpecies->average_fitness = average_fitness1;
+    badSpecies1->average_fitness = average_fitness2;
+    badSpecies2->average_fitness = average_fitness3;
 
-    population->species.push_back(goodSpecies);
-    population->species.push_back(badSpecies1);
-    population->species.push_back(badSpecies2);
+    p->genomes = {genome1, genome2, genome3};
+    p->species = {goodSpecies, badSpecies1, badSpecies2};
 
     // Run killing bad species
-    population->kill_bad_species();
+    p->kill_bad_species();
 
     // Assert bad species are removed
-    const auto &remainingSpecies = population->species;
+    const auto &remainingSpecies = p->species;
     ASSERT_EQ(remainingSpecies.size(), 1);
     ASSERT_EQ(remainingSpecies[0], goodSpecies);
+
+    // Assert genomes are correctly removed
+    ASSERT_TRUE(std::find(p->genomes.begin(), p->genomes.end(), genome1) != p->genomes.end());
+    ASSERT_TRUE(std::find(p->genomes.begin(), p->genomes.end(), genome2) == p->genomes.end());
+    ASSERT_TRUE(std::find(p->genomes.begin(), p->genomes.end(), genome3) == p->genomes.end());
 
     // Cleanup
     delete goodSpecies;
@@ -192,19 +213,19 @@ TEST_F(PopulationTest, KillBadSpecies)
 
 TEST_F(PopulationTest, UpdateSpecies)
 {
-    Population *population = new Population(config);
+    Population *p = new Population(config);
 
     // Mock species
     Species *species = new Species(new Genome(config));
     for (int i = 0; i < 10; ++i)
         species->add_to_species(new Genome(config));
-    population->species.push_back(species);
+    p->species.push_back(species);
 
     // Run updating species
-    population->update_species();
+    p->update_species();
 
     // Assert species is updated
-    const auto &updatedSpecies = population->species;
+    const auto &updatedSpecies = p->species;
     ASSERT_EQ(updatedSpecies.size(), 1);
 
     const auto &updatedGenomes = updatedSpecies[0]->genomes;
@@ -213,18 +234,18 @@ TEST_F(PopulationTest, UpdateSpecies)
 
 TEST_F(PopulationTest, GetGenomeById)
 {
-    Population *population = new Population(config);
+    Population *p = new Population(config);
 
     // Mock genomes
     Genome *genome1 = new Genome(config);
     Genome *genome2 = new Genome(config);
     genome1->id = "1";
     genome2->id = "2";
-    population->genomes.push_back(genome1);
-    population->genomes.push_back(genome2);
+    p->genomes.push_back(genome1);
+    p->genomes.push_back(genome2);
 
     // Run getting genome by id
-    auto resultGenome = population->get_genome("2");
+    auto resultGenome = p->get_genome("2");
 
     // Assert correct genome is returned
     ASSERT_EQ(resultGenome, genome2);

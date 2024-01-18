@@ -5,7 +5,7 @@ using ActivationFunction = std::string;
 
 double step(double x);
 double sigmoid(double x);
-double tanh(double x);
+double tan_h(double x);
 double relu(double x);
 double leaky_relu(double x);
 double prelu(double x);

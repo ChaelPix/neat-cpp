@@ -57,7 +57,7 @@ void Population::run(std::function<void(Genome *, int)> evaluate_genome, int nb_
         kill_bad_species();
         reproduce_species();
         reset_on_extinction();
-        printf("Best genome : %f\n", best_genome->fitness);
+        // printf("Best fitness : %f\n", best_genome->fitness);
 
         if (callback_generation)
             callback_generation(i);
@@ -77,6 +77,7 @@ void Population::speciate()
     for (auto &g : genomes)
     {
         bool species_found = false;
+
         for (auto &s : species)
         {
             if (s->same_species(g, config))
@@ -92,6 +93,11 @@ void Population::speciate()
             species.push_back(new_species);
         }
     }
+
+    // Remove the empty species
+    auto it = std::remove_if(species.begin(), species.end(), [](const Species *s)
+                             { return s->genomes.empty(); });
+    species.erase(it, species.end());
 }
 
 void Population::reproduce_species()
@@ -124,9 +130,9 @@ void Population::reproduce_species()
     set_best_genome();
 
     // Check the number of genomes for each species
-    species.erase(std::remove_if(species.begin(), species.end(), [this](const Species *s)
-                                 { return s->genomes.size() < config.population_size; }),
-                  species.end());
+    // species.erase(std::remove_if(species.begin(), species.end(), [this](const Species *s)
+    //                              { return s->genomes.size() < config.population_size; }),
+    //               species.end());
 }
 
 void Population::sort_species()
@@ -142,7 +148,15 @@ void Population::kill_stagnant_species()
 {
     // Use remove_if along with a lambda function to filter out stagnant species
     auto it = std::remove_if(config.species_elitism < species.size() ? species.begin() + config.species_elitism : species.begin(), species.end(), [this](const Species *s)
-                             { return s->stagnation >= config.max_stagnation; });
+                             { if (s->stagnation >= config.max_stagnation)
+                                 {
+                                     // Remove genomes of the stagnant species
+                                     genomes.erase(std::remove_if(genomes.begin(), genomes.end(), [s](const Genome *g)
+                                                                  { return std::find(s->genomes.begin(), s->genomes.end(), g) != s->genomes.end(); }),
+                                                   genomes.end());
+                                     return true; // Remove the stagnant species
+                                 }
+                                 return false; });
 
     // Erase the removed elements from the vector
     species.erase(it, species.end());
@@ -151,8 +165,21 @@ void Population::kill_stagnant_species()
 void Population::kill_bad_species()
 {
     float species_average_fitness = get_average_fitness_sum() / species.size();
+
+    // Use remove_if along with a lambda function to filter out bad species
     auto it = std::remove_if(species.size() > 1 ? species.begin() + 1 : species.begin(), species.end(), [this, species_average_fitness](const Species *s)
-                             { return s->average_fitness < species_average_fitness * config.bad_species_threshold; });
+                             { 
+                                 if (s->average_fitness < species_average_fitness * config.bad_species_threshold)
+                                 {
+                                     // Remove genomes of the bad species from the genomes vector
+                                     genomes.erase(std::remove_if(genomes.begin(), genomes.end(), [s](const Genome *g)
+                                                                 { return std::find(s->genomes.begin(), s->genomes.end(), g) != s->genomes.end(); }), genomes.end());
+
+                                     return true; // Remove the bad species
+                                 }
+                                 return false; });
+
+    // Erase the removed elements from the vector
     species.erase(it, species.end());
 }
 
@@ -186,8 +213,8 @@ void Population::update_species()
     for (auto &s : species)
     {
         s->kill_genomes(config);
-        s->fitness_sharing();
-        s->set_average_fitness();
+        // s->fitness_sharing();
+        // s->set_average_fitness();
     }
 }
 

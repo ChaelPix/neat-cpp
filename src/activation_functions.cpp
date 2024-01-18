@@ -32,7 +32,7 @@ double sigmoid(double x)
  * @param x Input value.
  * @return The hyperbolic tangent of the input value.
  */
-double tanh(double x)
+double tan_h(double x)
 {
     return tanh(x);
 }

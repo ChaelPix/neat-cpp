@@ -69,7 +69,7 @@ Genome::~Genome()
         delete gene;
 }
 
-void Genome::fully_connect(std::vector<ConnectionHistory *> innovation_history)
+void Genome::fully_connect(std::vector<ConnectionHistory *> &innovation_history)
 {
     for (int i = 0; i < inputs; ++i)
     {
@@ -179,7 +179,7 @@ void Genome::generate_network()
                 network.push_back(n);
 }
 
-void Genome::add_node(std::vector<ConnectionHistory *> innovation_history)
+void Genome::add_node(std::vector<ConnectionHistory *> &innovation_history)
 {
     // Pick a random connection to create a node between
     if (genes.empty())
@@ -279,7 +279,7 @@ void Genome::remove_node()
 {
     // Select a random node by excluding inputs, outputs, and bias nodes
     auto it = std::find_if(nodes.begin() + bias_node, nodes.end(), [&](const Node *n)
-                           { return n->layer != 0; });
+                           { return n->layer != 0 && n->layer != layers && n->id != bias_node; });
 
     if (it != nodes.end())
     {
@@ -296,7 +296,7 @@ void Genome::remove_node()
     }
 }
 
-void Genome::add_connection(std::vector<ConnectionHistory *> innovation_history)
+void Genome::add_connection(std::vector<ConnectionHistory *> &innovation_history)
 {
     // Cannot add a connection to a fully connected network
     if (fully_connected())
@@ -375,7 +375,7 @@ double Genome::new_connection_weight() const
     return weight;
 }
 
-int Genome::get_innovation_number(std::vector<ConnectionHistory *> innovation_history, Node *from_node, Node *to_node) const
+int Genome::get_innovation_number(std::vector<ConnectionHistory *> &innovation_history, Node *from_node, Node *to_node) const
 {
     bool is_new = true;
     int connection_innovation_nb = next_innovation_nb;
@@ -394,14 +394,8 @@ int Genome::get_innovation_number(std::vector<ConnectionHistory *> innovation_hi
 
     if (is_new)
     {
-        // If the mutation is new, create a vector of connection history representing the current state of the genome
-        std::vector<int> innovation_numbers;
-        for (const auto &gene : genes)
-            // Set the innovation numbers
-            innovation_numbers.push_back(gene->innovation_nb);
-
-        // Then, add this mutation to the innovation history
-        innovation_history.push_back(new ConnectionHistory(from_node, to_node, connection_innovation_nb, innovation_numbers));
+        // Add this mutation to the innovation history
+        innovation_history.push_back(new ConnectionHistory(from_node, to_node, connection_innovation_nb));
         ++next_innovation_nb;
     }
 
@@ -433,7 +427,7 @@ bool Genome::fully_connected() const
     return max_connections <= static_cast<int>(genes.size());
 }
 
-void Genome::mutate(std::vector<ConnectionHistory *> innovation_history)
+void Genome::mutate(std::vector<ConnectionHistory *> &innovation_history)
 {
     if (genes.empty())
         add_connection(innovation_history);
