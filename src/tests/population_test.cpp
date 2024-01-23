@@ -234,21 +234,23 @@ TEST_F(PopulationTest, UpdateSpecies)
     ASSERT_EQ(updatedGenomes.size(), config.min_species_size);
 }
 
-TEST_F(PopulationTest, GetGenomeById)
+TEST_F(PopulationTest, Clone)
 {
-    Population *p = new Population(config);
+    Population *population = new Population(config);
+    Population *clone = population->clone();
 
-    // Mock genomes
-    Genome *genome1 = new Genome(config);
-    Genome *genome2 = new Genome(config);
-    genome1->id = "1";
-    genome2->id = "2";
-    p->genomes.push_back(genome1);
-    p->genomes.push_back(genome2);
+    // Asserts the clone is valid
 
-    // Run getting genome by id
-    auto resultGenome = p->get_genome("2");
+    for (size_t i = 0; i < clone->genomes.size(); ++i)
+        ASSERT_TRUE(clone->genomes[i]->is_equal(population->genomes[i]));
 
-    // Assert correct genome is returned
-    ASSERT_EQ(resultGenome, genome2);
+    for (size_t i = 0; i < clone->species.size(); ++i)
+        ASSERT_TRUE(clone->species[i]->is_equal(population->species[i]));
+
+    if (population->best_genome != NULL)
+        ASSERT_TRUE(clone->best_genome->is_equal(population->best_genome));
+
+    ASSERT_EQ(clone->generation, population->generation);
+    ASSERT_EQ(clone->average_fitness, population->average_fitness);
+    ASSERT_EQ(clone->best_fitness, population->best_fitness);
 }

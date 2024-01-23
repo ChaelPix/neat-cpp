@@ -41,7 +41,7 @@ public:
      * @param nb_generations Number of generations to run the algorithm.
      * @param callback_generation Callback function for each generation (optional).
      */
-    void run(std::function<void(Genome *, int)> evaluate_genome, int nb_generations, std::function<void(int)> callback_generation = nullptr);
+    void run(std::function<void(Genome *, int)> evaluate_genome, int nb_generations, std::function<void(Population *, int)> callback_generation = nullptr);
 
     /**
      * @brief Groups the genomes into species based on their compatibility.
@@ -90,9 +90,8 @@ public:
     void update_species();
 
     /**
-     * @brief Retrieves a genome with a specific ID from the population.
-     * @param id ID of the genome to retrieve.
-     * @return Genome with the specified ID.
+     * @brief Return a copy of this population.
+     * @return A copy of this population.
      */
-    Genome *get_genome(const std::string &id);
+    Population *clone();
 };

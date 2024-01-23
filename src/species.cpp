@@ -11,7 +11,10 @@ Species::Species(Genome *genome)
     best_fitness = genome->fitness;
     average_fitness = 0;
     stagnation = 0;
-    genomes.push_back(genome);
+    if (genome != NULL)
+    {
+        genomes.push_back(genome);
+    }
 }
 
 Species::~Species()
@@ -161,4 +164,37 @@ void Species::fitness_sharing()
 {
     for (auto &g : genomes)
         g->fitness /= genomes.size();
+}
+
+bool Species::is_equal(Species *other)
+{
+    auto get_genome_id = [](const Genome *genome) -> const std::string &
+    {
+        return genome->id;
+    };
+
+    std::sort(genomes.begin(), genomes.end(), [&](const Genome *g1, const Genome *g2)
+              { return get_genome_id(g1) < get_genome_id(g2); });
+
+    std::sort(other->genomes.begin(), other->genomes.end(), [&](const Genome *g1, const Genome *g2)
+              { return get_genome_id(g1) < get_genome_id(g2); });
+
+    // Compare the genomes
+    for (size_t i = 0; i < genomes.size(); ++i)
+        if (!genomes[i]->is_equal(other->genomes[i]))
+            return false;
+
+    return true;
+}
+
+Species *Species::clone()
+{
+    Species *clone = new Species();
+    clone->champion = champion->clone();
+    clone->average_fitness = average_fitness;
+    clone->best_fitness = best_fitness;
+    clone->stagnation = stagnation;
+    for (auto &g : genomes)
+        clone->add_to_species(g);
+    return clone;
 }

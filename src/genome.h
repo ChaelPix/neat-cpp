@@ -127,17 +127,17 @@ public:
     int matching_gene(Genome *parent, int innovation) const;
 
     /**
+     * @brief Creates a clone of the genome.
+     * @return Cloned genome.
+     */
+    void print_genome() const;
+
+    /**
      * @brief Compare two genomes.
      * @param other The genome to compare with it.
      * @return True if the genomes are the same and connection genes, otherwise false.
      */
     bool is_equal(Genome *other);
-
-    /**
-     * @brief Creates a clone of the genome.
-     * @return Cloned genome.
-     */
-    void print_genome() const;
 
     /**
      * @brief Creates a clone of the genome.

@@ -34,7 +34,7 @@ void Population::set_best_genome()
     }
 }
 
-void Population::run(std::function<void(Genome *, int)> evaluate_genome, int nb_generations, std::function<void(int)> callback_generation)
+void Population::run(std::function<void(Genome *, int)> evaluate_genome, int nb_generations, std::function<void(Population *, int)> callback_generation)
 {
     for (int i = 0; i < nb_generations; ++i)
     {
@@ -57,10 +57,9 @@ void Population::run(std::function<void(Genome *, int)> evaluate_genome, int nb_
         kill_bad_species();
         reproduce_species();
         reset_on_extinction();
-        // printf("Best fitness : %f\n", best_genome->fitness);
 
         if (callback_generation)
-            callback_generation(i);
+            callback_generation(this, i);
 
         if (!config.no_fitness_termination && best_genome->fitness > config.fitness_threshold)
             break;
@@ -102,31 +101,48 @@ void Population::speciate()
 
 void Population::reproduce_species()
 {
+    // Calculate the sum of average fitness for all species
     float average_fitness_sum = get_average_fitness_sum();
+
+    // Get the target population size from the configuration
     int population_size = config.population_size;
 
+    // Create a vector to store the new generation of genomes
     std::vector<Genome *> children;
+
     for (auto &s : species)
     {
+        // Clone the champion of each species and add it to the new generation
         children.push_back(s->champion->clone());
-        // get the calculated amount of children from this species
+
+        // Calculate the number of children based on the species' contribution to the total average fitness
         int nb_of_children = (average_fitness_sum == 0) ? 0 : std::floor((s->average_fitness / average_fitness_sum) * population_size) - 1;
+
+        // Generate babies and add them to the new generation
         for (int i = 0; i < nb_of_children; ++i)
             children.push_back(s->give_me_baby(innovation_history));
     }
 
+    // Clone the best genome from the previous generation and add it to the new generation
     Genome *previous_best = genomes[0];
     if (children.size() < static_cast<size_t>(population_size))
         children.push_back(previous_best->clone());
 
-    // if not enough babies (due to flooring the number of children to get a whole var) get babies from the best species
+    // If there are still not enough babies, get babies from the best species until reaching the target population size
     while (children.size() < static_cast<size_t>(population_size))
         children.push_back(species[0]->give_me_baby(innovation_history));
 
+    // Update the population's genomes with the new generation
     genomes = children;
+
+    // Increment the generation counter
     ++generation;
+
+    // Generate neural networks for each genome in the new generation
     for (auto &g : genomes)
         g->generate_network();
+
+    // Set the best genome in the population
     set_best_genome();
 }
 
@@ -208,17 +224,33 @@ void Population::update_species()
     for (auto &s : species)
     {
         s->kill_genomes(config);
-        // s->fitness_sharing();
-        // s->set_average_fitness();
+        s->fitness_sharing();
+        s->set_average_fitness();
     }
 }
 
-Genome *Population::get_genome(const std::string &id)
+Population *Population::clone()
 {
-    auto it = std::find_if(genomes.begin(), genomes.end(), [&id](const Genome *g)
-                           { return g->id == id; });
-    if (it != genomes.end())
-        return *it;
-    // Return a default-constructed Genome if not found (you may want to handle this differently based on your design)
-    return new Genome(config);
+    Population *clone = new Population(config);
+    clone->genomes = {};
+    clone->species = {};
+
+    // Clone the species
+    for (auto &s : species)
+        clone->species.push_back(s->clone());
+
+    // Add the genomes of cloned species to the population
+    for (auto &s : species)
+        for (auto &g : s->genomes)
+            clone->genomes.push_back(g);
+
+    clone->generation = generation;
+    clone->average_fitness = average_fitness;
+    clone->best_fitness = best_fitness;
+    clone->innovation_history = innovation_history;
+
+    if (best_genome != NULL)
+        clone->best_genome = best_genome->clone();
+
+    return clone;
 }

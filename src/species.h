@@ -22,7 +22,7 @@ public:
      * @brief Initializes a Species instance.
      * @param genome The initial genome for the species.
      */
-    Species(Genome *genome);
+    Species(Genome *genome = NULL);
 
     /**
      * @brief Deconstructor for Species instance.
@@ -93,6 +93,19 @@ public:
      * @brief Applies fitness sharing to protect unique genomes.
      */
     void fitness_sharing();
+
+    /**
+     * @brief Compare two species.
+     * @param other The other species to compare with it
+     * @returns True if the species are equals, otherwise false.
+     */
+    bool is_equal(Species *other);
+
+    /**
+     * @brief Return a copy of this species.
+     * @return A copy of this species.
+     */
+    Species *clone();
 };
 
 #endif // SPECIES_H

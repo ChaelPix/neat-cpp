@@ -5,7 +5,7 @@
 #include <cmath>
 #include <algorithm>
 #include <fstream>
-#include <string>
+#include <filesystem>
 #include "math_utils.h"
 #include "config.h"
 #include "node.h"
@@ -521,29 +521,6 @@ Genome *Genome::crossover(Genome *parent) const
     return child;
 }
 
-bool Genome::is_equal(Genome *other)
-{
-    // Compare the number of nodes
-    if (nodes.size() != other->nodes.size())
-        return false;
-
-    // Compare the number of genes
-    if (genes.size() != other->genes.size())
-        return false;
-
-    // Compare each node
-    for (size_t i = 0; i < nodes.size(); ++i)
-        if (!nodes[i]->is_equal(other->nodes[i]))
-            return false;
-
-    // Compare each gene
-    for (size_t i = 0; i < genes.size(); ++i)
-        if (!genes[i]->is_equal(other->genes[i]))
-            return false;
-
-    return true;
-}
-
 int Genome::matching_gene(Genome *parent, int innovation) const
 {
     for (size_t i = 0; i < parent->genes.size(); ++i)
@@ -574,6 +551,29 @@ void Genome::print_genome() const
     std::cout << std::endl;
 }
 
+bool Genome::is_equal(Genome *other)
+{
+    // Compare the number of nodes
+    if (nodes.size() != other->nodes.size())
+        return false;
+
+    // Compare the number of genes
+    if (genes.size() != other->genes.size())
+        return false;
+
+    // Compare each node
+    for (size_t i = 0; i < nodes.size(); ++i)
+        if (!nodes[i]->is_equal(other->nodes[i]))
+            return false;
+
+    // Compare each gene
+    for (size_t i = 0; i < genes.size(); ++i)
+        if (!genes[i]->is_equal(other->genes[i]))
+            return false;
+
+    return true;
+}
+
 Genome *Genome::clone()
 {
     Genome *clone = new Genome(config, true);
@@ -599,11 +599,15 @@ Genome *Genome::clone()
 
 void Genome::save(const std::string &file_path)
 {
-    // Check if the directory exists
-    size_t pos = file_path.find_last_of('/');
-    std::string dir = file_path.substr(0, pos);
-    if (!dir.empty() && !std::__fs::filesystem::exists(dir))
-        std::__fs::filesystem::create_directories(dir);
+    // Check if the directory exists, create it if not
+    std::filesystem::path dir = std::filesystem::path(file_path).parent_path();
+    if (!std::filesystem::exists(dir))
+        std::filesystem::create_directories(dir);
+
+    // If the file has no extension, append ".pkl"
+    std::filesystem::path path = file_path;
+    if (path.extension().empty())
+        path += ".pkl";
 
     // Serialize and save the model to a file
     std::ofstream file(file_path, std::ios::binary);
