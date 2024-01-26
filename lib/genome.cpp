@@ -204,12 +204,12 @@ void Genome::add_node(std::vector<ConnectionHistory *> &innovation_history)
         get_node(new_node_nb));
 
     genes.push_back(
-        new ConnectionGene{
+        new ConnectionGene(
             genes[random_connection]->from_node,
             get_node(new_node_nb),
             1,
             connection_innovation_nb,
-            config.enabled_default});
+            config.enabled_default));
 
     connection_innovation_nb = get_innovation_number(
         innovation_history,
@@ -218,12 +218,12 @@ void Genome::add_node(std::vector<ConnectionHistory *> &innovation_history)
 
     // Add a new connection from the new node with a weight the same as the disabled connection
     genes.push_back(
-        new ConnectionGene{
+        new ConnectionGene(
             get_node(new_node_nb),
             genes[random_connection]->to_node,
             genes[random_connection]->weight,
             connection_innovation_nb,
-            config.enabled_default});
+            config.enabled_default));
 
     get_node(new_node_nb)->layer = genes[random_connection]->from_node->layer + 1;
 
@@ -251,12 +251,12 @@ void Genome::add_node(std::vector<ConnectionHistory *> &innovation_history)
 
     // Connect the bias to the new node
     genes.push_back(
-        new ConnectionGene{
+        new ConnectionGene(
             nodes[bias_node],
             get_node(new_node_nb),
             bias_value,
             connection_innovation_nb,
-            config.enabled_default});
+            config.enabled_default));
 
     // If the layer of the new node is equal to the layer of the output node of the old connection,
     // then a new layer needs to be created
