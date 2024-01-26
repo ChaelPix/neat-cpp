@@ -247,7 +247,11 @@ TEST_F(TestGenome, MatchingGene)
 {
     Genome *genome = new Genome(config);
     genome->fully_connect(connection_history);
-    int matchingGeneIndex = genome->matching_gene(genome, 68); // 68 because of incrementation of the global variable next_innovation_nb
+
+    std::sort(genome->genes.begin(), genome->genes.end(), [](const ConnectionGene *g1, const ConnectionGene *g2)
+              { return g1->innovation_nb < g2->innovation_nb; });
+
+    int matchingGeneIndex = genome->matching_gene(genome, genome->genes[0]->innovation_nb);
 
     // Check if matching gene is found properly
     ASSERT_EQ(matchingGeneIndex, 0);

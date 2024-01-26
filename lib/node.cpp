@@ -1,6 +1,6 @@
 #include <vector>
 #include <cmath>
-#include <cstdlib>
+#include <iostream>
 #include <algorithm>
 #include "config.h"
 #include "activation_functions.h"
@@ -52,8 +52,16 @@ void Node::mutate(const NeatConfig &config, bool is_bias_node)
             "softmax",
             "linear",
             "swish"};
+
         int random_index = floor(randrange() * activations_functions.size());
         ActivationFunction random_function = activations_functions[random_index];
+
+        while (random_function == activation_function)
+        {
+            random_index = floor(randrange() * activations_functions.size());
+            random_function = activations_functions[random_index];
+        }
+
         activation_function = random_function;
     }
 }
@@ -126,7 +134,7 @@ ActivationFunctionPointer Node::get_function(ActivationFunction function)
         return swish;
     else
     {
-        printf("Unknow activation function for node.");
+        std::cerr << "Unknown activation function: " << activation_function << std::endl;
         return sigmoid;
     }
 }

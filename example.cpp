@@ -2,10 +2,10 @@
 #include <cstdio> // For printf function
 #include <vector>
 #include <cmath>
-#include "src/math_utils.h"
-#include "src/config.h"
-#include "src/genome.h"
-#include "src/population.h"
+#include "lib/math_utils.h"
+#include "lib/config.h"
+#include "lib/genome.h"
+#include "lib/population.h"
 
 int expected = 10;
 std::vector<double> inputs = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
@@ -35,16 +35,14 @@ int main(int argc, char *argv[])
     int generations = 100;
     p->run(&evaluate_genome, generations, &callback_generation);
 
+    p->best_genome->print_genome();
+
     // Display the results of the best genome
     std::vector<double> result = p->best_genome->feed_forward(inputs);
-    printf("\n");
     if (result[0] - expected >= 0)
         printf("Solution found: %f\n", expected - 1 / p->best_genome->fitness);
     else
         printf("Solution found: %f\n", expected + 1 / p->best_genome->fitness);
-    printf("\n");
-
-    p->best_genome->print_genome();
 
     // Save this genome
     std::string id = p->best_genome->id;

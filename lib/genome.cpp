@@ -159,11 +159,8 @@ std::vector<double> Genome::feed_forward(std::vector<double> input_values)
     }
     catch (const std::exception &e)
     {
-        // Handle the exception here or re-throw if needed
-        std::cerr << "An error occurred during feed_forward: " << e.what() << std::endl;
-        // Optionally, re-throw the exception to propagate it further
-        // throw;
-        return {}; // Return an empty vector or handle the error accordingly
+        std::cerr << "An error occurred during feed forward: " << e.what() << std::endl;
+        return std::vector<double>{};
     }
 }
 
@@ -188,11 +185,11 @@ void Genome::add_node(std::vector<ConnectionHistory *> &innovation_history)
         return;
     }
 
-    int random_connection = rand() % genes.size();
+    int random_connection = randrange(0, genes.size());
 
     while (genes[random_connection]->from_node == nodes[bias_node] && genes.size() != 1)
         // Don't disconnect bias
-        random_connection = rand() % genes.size();
+        random_connection = randrange(0, genes.size());
 
     genes[random_connection]->enabled = false; // Disable the connection
 
@@ -308,14 +305,14 @@ void Genome::add_connection(std::vector<ConnectionHistory *> &innovation_history
     };
 
     // Get random nodes
-    int random_node_1 = rand() % nodes.size();
-    int random_node_2 = rand() % nodes.size();
+    int random_node_1 = randrange(0, nodes.size());
+    int random_node_2 = randrange(0, nodes.size());
 
     while (!random_connection_nodes_are_valid(random_node_1, random_node_2))
     {
         // While the random nodes are not valid, get new ones
-        random_node_1 = rand() % nodes.size();
-        random_node_2 = rand() % nodes.size();
+        random_node_1 = randrange(0, nodes.size());
+        random_node_2 = randrange(0, nodes.size());
     }
 
     int temp;
@@ -350,7 +347,7 @@ void Genome::remove_connection()
 {
     if (!genes.empty())
     {
-        auto random_gene = genes.begin() + rand() % genes.size();
+        auto random_gene = genes.begin() + randrange(0, genes.size());
         genes.erase(random_gene);
     }
 }
@@ -429,29 +426,36 @@ bool Genome::fully_connected() const
 
 void Genome::mutate(std::vector<ConnectionHistory *> &innovation_history)
 {
-    if (genes.empty())
-        add_connection(innovation_history);
-
-    for (auto &node : nodes)
+    try
     {
-        bool is_bias_node = (&node == &nodes[bias_node]);
-        node->mutate(config, is_bias_node);
+        if (genes.empty())
+            add_connection(innovation_history);
+
+        for (auto &node : nodes)
+        {
+            bool is_bias_node = (&node == &nodes[bias_node]);
+            node->mutate(config, is_bias_node);
+        }
+
+        for (auto &gene : genes)
+            gene->mutate(config);
+
+        if (randrange() < config.conn_add_prob)
+            add_connection(innovation_history);
+
+        if (randrange() < config.conn_delete_prob)
+            remove_connection();
+
+        if (randrange() < config.node_add_prob)
+            add_node(innovation_history);
+
+        if (randrange() < config.node_delete_prob)
+            remove_node();
     }
-
-    for (auto &gene : genes)
-        gene->mutate(config);
-
-    if (rand() < RAND_MAX * config.conn_add_prob)
-        add_connection(innovation_history);
-
-    if (rand() < RAND_MAX * config.conn_delete_prob)
-        remove_connection();
-
-    if (rand() < RAND_MAX * config.node_add_prob)
-        add_node(innovation_history);
-
-    if (rand() < RAND_MAX * config.node_delete_prob)
-        remove_node();
+    catch (const std::exception &e)
+    {
+        std::cerr << "An error occurred during mutation: " << e.what() << std::endl;
+    }
 }
 
 Genome *Genome::crossover(Genome *parent) const
@@ -478,14 +482,14 @@ Genome *Genome::crossover(Genome *parent) const
             if (!gene->enabled || !parent->genes[parent_gene_index]->enabled)
             {
                 // If either of the matching genes is disabled
-                if (rand() < 0.75 * RAND_MAX)
+                if (randrange() < 0.75)
                 {
                     // 75% of the time disable the child gene
                     set_enabled = false;
                 }
             }
 
-            if (rand() < 0.5 * RAND_MAX)
+            if (randrange() < 0.5)
                 child_genes.push_back(gene);
             else
                 // Get gene from the parent
@@ -561,15 +565,37 @@ bool Genome::is_equal(Genome *other)
     if (genes.size() != other->genes.size())
         return false;
 
-    // Compare each node
-    for (size_t i = 0; i < nodes.size(); ++i)
-        if (!nodes[i]->is_equal(other->nodes[i]))
+    // Compare the nodes
+    for (auto &node1 : nodes)
+    {
+        bool found = false;
+        for (auto &node2 : other->nodes)
+        {
+            if (node1->is_equal(node2))
+            {
+                found = true;
+                break;
+            }
+        }
+        if (found == false)
             return false;
+    }
 
-    // Compare each gene
-    for (size_t i = 0; i < genes.size(); ++i)
-        if (!genes[i]->is_equal(other->genes[i]))
+    // Compare the genes
+    for (auto &gene1 : genes)
+    {
+        bool found = false;
+        for (auto &gene2 : other->genes)
+        {
+            if (gene1->is_equal(gene2))
+            {
+                found = true;
+                break;
+            }
+        }
+        if (found == false)
             return false;
+    }
 
     return true;
 }
@@ -579,11 +605,11 @@ Genome *Genome::clone()
     Genome *clone = new Genome(config, true);
 
     // Copy nodes
-    for (auto node : nodes)
+    for (auto &node : nodes)
         clone->nodes.push_back(node->clone());
 
     // Copy genes and connect them to the clone new nodes
-    for (auto gene : genes)
+    for (auto &gene : genes)
         clone->genes.push_back(gene->clone(
             clone->get_node(gene->from_node->id),
             clone->get_node(gene->to_node->id)));
