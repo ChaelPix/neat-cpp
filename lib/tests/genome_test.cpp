@@ -14,7 +14,7 @@ class TestGenome : public testing::Test
 protected:
     // Mock NeatConfig
     NeatConfig config;
-    std::vector<ConnectionHistory *> connection_history;
+    std::vector<std::shared_ptr<ConnectionHistory>> connection_history;
 
     void SetUp() override
     {
@@ -76,7 +76,7 @@ TEST_F(TestGenome, FullyConnect)
 TEST_F(TestGenome, GetNode)
 {
     Genome *genome = new Genome(config);
-    Node *node = genome->get_node(0);
+    std::shared_ptr<Node> node = genome->get_node(0);
 
     ASSERT_NE(node, nullptr);
     ASSERT_EQ(node->id, 0);
@@ -194,8 +194,8 @@ TEST_F(TestGenome, NewConnectionWeight)
 TEST_F(TestGenome, GetInnovationNumber)
 {
     Genome *genome = new Genome(config);
-    Node *fromNode = new Node(0, "sigmoid", 0);
-    Node *toNode = new Node(2, "sigmoid", 1);
+    std::shared_ptr<Node> fromNode = std::make_shared<Node>(0, "sigmoid", 0);
+    std::shared_ptr<Node> toNode = std::make_shared<Node>(2, "sigmoid", 1);
     int innovationNumber = genome->get_innovation_number(connection_history, fromNode, toNode);
 
     // Check if the innovation number is obtained properly
@@ -248,7 +248,7 @@ TEST_F(TestGenome, MatchingGene)
     Genome *genome = new Genome(config);
     genome->fully_connect(connection_history);
 
-    std::sort(genome->genes.begin(), genome->genes.end(), [](const ConnectionGene *g1, const ConnectionGene *g2)
+    std::sort(genome->genes.begin(), genome->genes.end(), [](const std::shared_ptr<ConnectionGene> g1, const std::shared_ptr<ConnectionGene> g2)
               { return g1->innovation_nb < g2->innovation_nb; });
 
     int matchingGeneIndex = genome->matching_gene(genome, genome->genes[0]->innovation_nb);

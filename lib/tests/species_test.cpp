@@ -9,7 +9,7 @@ class SpeciesTest : public testing::Test
 protected:
     NeatConfig config;
     Genome *genome;
-    std::vector<ConnectionHistory *> connection_history;
+    std::vector<std::shared_ptr<ConnectionHistory>> connection_history;
     Species *species;
 
     void SetUp() override
@@ -28,23 +28,21 @@ protected:
     void TearDown() override
     {
         delete species;
-        for (auto history : connection_history)
-            delete history;
     }
 
-    std::vector<ConnectionHistory *> init_connection_history(int num_inputs, int num_outputs)
+    std::vector<std::shared_ptr<ConnectionHistory>> init_connection_history(int num_inputs, int num_outputs)
     {
-        std::vector<ConnectionHistory *> connections;
+        std::vector<std::shared_ptr<ConnectionHistory>> connections;
         int innovation_nb = 0;
         std::vector<int> innovation_nbs(num_inputs * num_outputs + 1);
 
         for (int i = 0; i < num_inputs; ++i)
         {
-            Node *node_input = new Node(i, "relu");
+            std::shared_ptr<Node> node_input = std::make_shared<Node>(i, "relu");
             for (int j = 0; j < num_outputs; ++j)
             {
-                Node *node_output = new Node(j, "sigmoid");
-                connections.push_back(new ConnectionHistory(node_input, node_output, innovation_nb));
+                std::shared_ptr<Node> node_output = std::make_shared<Node>(j, "sigmoid");
+                connections.push_back(std::make_shared<ConnectionHistory>(node_input, node_output, innovation_nb));
                 ++innovation_nb;
             }
         }
@@ -76,14 +74,12 @@ TEST_F(SpeciesTest, SameSpeciesFalse)
     otherConfig.num_outputs = 1;
 
     Genome *otherGenome = new Genome(otherConfig);
-    std::vector<ConnectionHistory *> otherConnectionHistory = init_connection_history(5, 1);
+    std::vector<std::shared_ptr<ConnectionHistory>> otherConnectionHistory = init_connection_history(5, 1);
     otherGenome->fully_connect(otherConnectionHistory);
 
     ASSERT_FALSE(species->same_species(otherGenome, config));
 
     delete otherGenome;
-    for (auto history : otherConnectionHistory)
-        delete history;
 }
 
 TEST_F(SpeciesTest, AddToSpecies)
@@ -105,13 +101,11 @@ TEST_F(SpeciesTest, ExcessDisjointGenes)
 
     // Test with two totally different genomes
     Genome *otherGenomeDifferent = new Genome(config);
-    std::vector<ConnectionHistory *> otherConnectionHistoryDifferent = init_connection_history(10, 2);
+    std::vector<std::shared_ptr<ConnectionHistory>> otherConnectionHistoryDifferent = init_connection_history(10, 2);
     otherGenomeDifferent->fully_connect(otherConnectionHistoryDifferent);
     double resultDifferent = species->get_excess_disjoint_genes(genome, otherGenomeDifferent);
     ASSERT_GT(resultDifferent, 0.0);
     delete otherGenomeDifferent;
-    for (auto history : otherConnectionHistoryDifferent)
-        delete history;
 
     // Test with two genomes a little different
     Genome *otherGenomeLittleDifferent = genome->clone();
@@ -130,13 +124,11 @@ TEST_F(SpeciesTest, AverageWeightDifference)
 
     // Test average weight diff of two totally different genomes
     Genome *otherGenomeDifferent = new Genome(config);
-    std::vector<ConnectionHistory *> otherConnectionHistoryDifferent = init_connection_history(10, 2);
+    std::vector<std::shared_ptr<ConnectionHistory>> otherConnectionHistoryDifferent = init_connection_history(10, 2);
     otherGenomeDifferent->fully_connect(otherConnectionHistoryDifferent);
     double resultDifferent = species->average_weight_diff(genome, otherGenomeDifferent);
     ASSERT_DOUBLE_EQ(resultDifferent, 100.0);
     delete otherGenomeDifferent;
-    for (auto history : otherConnectionHistoryDifferent)
-        delete history;
 
     // Test average weight diff without connection genes
     Genome *otherGenomeNoConnections = new Genome(config);
@@ -146,7 +138,7 @@ TEST_F(SpeciesTest, AverageWeightDifference)
 
     // Test average weight diff with two genomes a little bit different
     Genome *otherGenomeLittleDifferent = genome->clone();
-    std::vector<ConnectionHistory *> history = {new ConnectionHistory(nullptr, nullptr, 10)};
+    std::vector<std::shared_ptr<ConnectionHistory>> history = {std::make_shared<ConnectionHistory>(nullptr, nullptr, 10)};
     otherGenomeLittleDifferent->mutate(history); // Adjust the parameters as needed
     double resultLittleDifferent = species->average_weight_diff(genome, otherGenomeLittleDifferent);
     ASSERT_GT(resultLittleDifferent, 0.0);

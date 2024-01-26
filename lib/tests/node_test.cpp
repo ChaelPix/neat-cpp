@@ -7,17 +7,12 @@ class TestNode : public ::testing::Test
 {
 protected:
     NeatConfig config;
-    Node *node;
+    std::shared_ptr<Node> node;
 
     void SetUp() override
     {
         config = load_config_from_file("default_config.txt");
-        node = new Node(1, "relu", 1);
-    }
-
-    void TearDown() override
-    {
-        delete node;
+        node = std::make_shared<Node>(1, "relu", 1);
     }
 
     void test_initialization()
@@ -65,40 +60,33 @@ protected:
 
     void test_is_connected_to()
     {
-        Node *node1 = new Node(2, "step", 2);
-        Node *node2 = new Node(3, "sigmoid", 3);
-        node->output_connections.push_back(new ConnectionGene(node, node1, 1.0, 1, true));
-        node->output_connections.push_back(new ConnectionGene(node, node2, 1.0, 1, true));
+        std::shared_ptr<Node> node1 = std::make_shared<Node>(2, "step", 2);
+        std::shared_ptr<Node> node2 = std::make_shared<Node>(3, "sigmoid", 3);
+        node->output_connections.push_back(std::make_shared<ConnectionGene>(node, node1, 1.0, 1, true));
+        node->output_connections.push_back(std::make_shared<ConnectionGene>(node, node2, 1.0, 1, true));
         // Validate if the node is connected to the provided node
         ASSERT_TRUE(node->is_connected_to(node1));
         ASSERT_TRUE(node->is_connected_to(node2));
 
-        Node *node3 = new Node(4, "tanh", 1);
+        std::shared_ptr<Node> node3 = std::make_shared<Node>(4, "tanh", 1);
         // Can't be connected if is on the same layer
         ASSERT_FALSE(node->is_connected_to(node3));
 
-        Node *node4 = new Node(4, "relu", 0);
-        node4->output_connections.push_back(new ConnectionGene(node4, node, 1.0, 1, true));
+        std::shared_ptr<Node> node4 = std::make_shared<Node>(4, "relu", 0);
+        node4->output_connections.push_back(std::make_shared<ConnectionGene>(node4, node, 1.0, 1, true));
         // Connected because of the connection gene
         ASSERT_TRUE(node->is_connected_to(node4));
 
-        Node *node5 = new Node(5, "softmax", 0);
+        std::shared_ptr<Node> node5 = std::make_shared<Node>(5, "softmax", 0);
         node5->output_connections = {};
         // Can't be connected if is on a previous layer and no connection gene
         ASSERT_FALSE(node->is_connected_to(node5));
-
-        delete node1;
-        delete node2;
-        delete node3;
-        delete node4;
-        delete node5;
     }
 
     void test_clone()
     {
-        Node *cloned_node = node->clone();
+        std::shared_ptr<Node> cloned_node = node->clone();
         ASSERT_TRUE(node->is_equal(cloned_node));
-        delete cloned_node;
     }
 };
 

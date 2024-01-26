@@ -16,34 +16,33 @@ class Node;              // Forward declaration
 class Genome
 {
 public:
-    std::string id;                      // Unique identifier for the genome.
-    NeatConfig config;                   // Configuration settings for NEAT.
-    std::vector<ConnectionGene *> genes; // List of connection genes.
-    std::vector<Node *> nodes;           // List of nodes in the genome.
-    int inputs;                          // Number of input nodes.
-    int outputs;                         // Number of output nodes.
-    int layers;                          // Number of layers in the neural network.
-    int next_node;                       // ID for the next node to be added.
-    int bias_node;                       // ID of the bias node.
-    std::vector<Node *> network;         // Fully connected network.
-    double fitness;                      // Fitness score of the genome.
+    std::string id;                                     // Unique identifier for the genome.
+    NeatConfig config;                                  // Configuration settings for NEAT.
+    std::vector<std::shared_ptr<ConnectionGene>> genes; // List of connection genes.
+    std::vector<std::shared_ptr<Node>> nodes;           // List of nodes in the genome.
+    int inputs;                                         // Number of input nodes.
+    int outputs;                                        // Number of output nodes.
+    int layers;                                         // Number of layers in the neural network.
+    int next_node;                                      // ID for the next node to be added.
+    int bias_node;                                      // ID of the bias node.
+    std::vector<std::shared_ptr<Node>> network;         // Fully connected network.
+    double fitness;                                     // Fitness score of the genome.
 
     Genome();
     Genome(const NeatConfig &config, bool crossover = false);
-    ~Genome();
 
     /**
      * @brief Fully connects the genome's neural network.
      * @param innovation_history List of connection history for innovation tracking.
      */
-    void fully_connect(std::vector<ConnectionHistory *> &innovation_history);
+    void fully_connect(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history);
 
     /**
      * @brief Retrieves a node based on its ID.
      * @param id ID of the node.
      * @return Pointer to the node if found, nullptr otherwise.
      */
-    Node *get_node(int id);
+    std::shared_ptr<Node> get_node(int id);
 
     /**
      * @brief Connects nodes based on the genome's genes.
@@ -66,7 +65,7 @@ public:
      * @brief Adds a node to the genome.
      * @param innovation_history List of connection history for innovation tracking.
      */
-    void add_node(std::vector<ConnectionHistory *> &innovation_history);
+    void add_node(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history);
 
     /**
      * @brief Removes a node from the genome.
@@ -77,7 +76,7 @@ public:
      * @brief Adds a connection to the genome.
      * @param innovation_history List of connection history for innovation tracking.
      */
-    void add_connection(std::vector<ConnectionHistory *> &innovation_history);
+    void add_connection(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history);
 
     /**
      * @brief Removes a connection from the genome.
@@ -97,7 +96,7 @@ public:
      * @param to_node Pointer to the target node.
      * @return Innovation number for the connection.
      */
-    int get_innovation_number(std::vector<ConnectionHistory *> &innovation_history, Node *from_node, Node *to_node) const;
+    int get_innovation_number(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history, std::shared_ptr<Node> from_node, std::shared_ptr<Node> to_node) const;
 
     /**
      * @brief Checks if the genome is fully connected.
@@ -109,7 +108,7 @@ public:
      * @brief Mutates the genome based on configuration settings.
      * @param innovation_history List of connection history for innovation tracking.
      */
-    void mutate(std::vector<ConnectionHistory *> &innovation_history);
+    void mutate(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history);
 
     /**
      * @brief Performs crossover with another genome to create a child genome.

@@ -4,7 +4,7 @@
 #include "node.h"
 #include "connection_gene.h"
 
-ConnectionGene::ConnectionGene(Node *from, Node *to, double w, int innovation, bool enabled) : from_node(from), to_node(to), weight(w), innovation_nb(innovation), enabled(enabled) {}
+ConnectionGene::ConnectionGene(std::shared_ptr<Node> from, std::shared_ptr<Node> to, double w, int innovation, bool enabled) : from_node(from), to_node(to), weight(w), innovation_nb(innovation), enabled(enabled) {}
 
 void ConnectionGene::mutate(const NeatConfig &config)
 {
@@ -23,12 +23,12 @@ void ConnectionGene::mutate(const NeatConfig &config)
         enabled = !enabled;
 }
 
-bool ConnectionGene::is_equal(ConnectionGene *other)
+bool ConnectionGene::is_equal(std::shared_ptr<ConnectionGene> other)
 {
     return from_node == other->from_node && to_node == other->to_node && weight == other->weight && innovation_nb == other->innovation_nb && enabled == other->enabled;
 }
 
-ConnectionGene *ConnectionGene::clone(Node *from, Node *to)
+std::shared_ptr<ConnectionGene> ConnectionGene::clone(std::shared_ptr<Node> from, std::shared_ptr<Node> to)
 {
-    return new ConnectionGene(from, to, weight, innovation_nb, enabled);
+    return std::make_shared<ConnectionGene>(from, to, weight, innovation_nb, enabled);
 }

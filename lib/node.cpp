@@ -66,7 +66,7 @@ void Node::mutate(const NeatConfig &config, bool is_bias_node)
     }
 }
 
-bool Node::is_connected_to(Node *node)
+bool Node::is_connected_to(std::shared_ptr<Node> node)
 {
     if (node->layer == layer)
         return false;
@@ -74,7 +74,7 @@ bool Node::is_connected_to(Node *node)
     if (node->layer < layer)
     {
         for (auto &c : node->output_connections)
-            if (c->to_node == this)
+            if (c->to_node.get() == this)
                 return true;
     }
     else
@@ -87,7 +87,7 @@ bool Node::is_connected_to(Node *node)
     return false;
 }
 
-bool Node::is_equal(Node *other)
+bool Node::is_equal(std::shared_ptr<Node> other)
 {
     if (id != other->id || activation_function != other->activation_function || layer != other->layer)
         return false;
@@ -105,9 +105,9 @@ bool Node::is_equal(Node *other)
     return true;
 }
 
-Node *Node::clone()
+std::shared_ptr<Node> Node::clone()
 {
-    return new Node(id, activation_function, layer);
+    return std::make_shared<Node>(id, activation_function, layer);
 }
 
 ActivationFunctionPointer Node::get_function(ActivationFunction function)

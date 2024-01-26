@@ -8,23 +8,16 @@ class ConnectionGeneTest : public ::testing::Test
 {
 protected:
     NeatConfig config;
-    Node *fromNode;
-    Node *toNode;
-    ConnectionGene *gene;
+    std::shared_ptr<Node> fromNode;
+    std::shared_ptr<Node> toNode;
+    std::shared_ptr<ConnectionGene> gene;
 
     void SetUp() override
     {
         config = load_config_from_file("default_config.txt");
-        fromNode = new Node(1, "sigmoid", 1);
-        toNode = new Node(2, "sigmoid", 2);
-        gene = new ConnectionGene(fromNode, toNode, 0.5, 1, true);
-    }
-
-    void TearDown() override
-    {
-        delete fromNode;
-        delete toNode;
-        delete gene;
+        fromNode = std::make_shared<Node>(1, "sigmoid", 1);
+        toNode = std::make_shared<Node>(2, "sigmoid", 2);
+        gene = std::make_shared<ConnectionGene>(fromNode, toNode, 0.5, 1, true);
     }
 
     // Add your test functions for ConnectionGene
@@ -61,9 +54,8 @@ protected:
 
     void testClone()
     {
-        ConnectionGene *clonedConnectionGene = gene->clone(fromNode, toNode);
+        std::shared_ptr<ConnectionGene> clonedConnectionGene = gene->clone(fromNode, toNode);
         ASSERT_TRUE(gene->is_equal(clonedConnectionGene));
-        delete clonedConnectionGene;
     }
 };
 

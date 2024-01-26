@@ -11,9 +11,9 @@
 class ConnectionHistory
 {
 public:
-    Node *from_node;   // Pointer to the source node.
-    Node *to_node;     // Pointer to the target node.
-    int innovation_nb; // Innovation number of the connection.
+    std::shared_ptr<Node> from_node; // Pointer to the source node.
+    std::shared_ptr<Node> to_node;   // Pointer to the target node.
+    int innovation_nb;               // Innovation number of the connection.
 
     /**
      * @brief Constructor for ConnectionHistory.
@@ -21,7 +21,7 @@ public:
      * @param to_node Pointer to the target node.
      * @param innovation_nb Innovation number of the connection.
      */
-    ConnectionHistory(Node *from_node, Node *to_node, int innovation_nb);
+    ConnectionHistory(std::shared_ptr<Node> from_node, std::shared_ptr<Node> to_node, int innovation_nb);
 
     /**
      * @brief Returns whether the genome matches the original genome and the connection is between the same nodes
@@ -29,7 +29,7 @@ public:
      * @param to_node Pointer to the target node.
      * @return True if the connection history matches, false otherwise.
      */
-    bool matches(Node *from_node, Node *to_node);
+    bool matches(std::shared_ptr<Node> from_node, std::shared_ptr<Node> to_node);
 };
 
 #endif

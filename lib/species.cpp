@@ -108,7 +108,7 @@ void Species::set_average_fitness()
     average_fitness = sum / genomes.size();
 }
 
-Genome *Species::give_me_baby(std::vector<ConnectionHistory *> innovation_history)
+Genome *Species::give_me_baby(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history)
 {
     Genome *baby;
     if (rand() / static_cast<float>(RAND_MAX) < 0.25)

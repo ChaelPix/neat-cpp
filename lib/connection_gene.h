@@ -11,11 +11,11 @@ class Node; // Forward declaration
 class ConnectionGene
 {
 public:
-    Node *from_node;   // Pointer to the source node.
-    Node *to_node;     // Pointer to the target node.
-    double weight;     // Weight of the connection.
-    int innovation_nb; // Innovation number of the connection.
-    bool enabled;      // Flag indicating whether the connection is enabled or disabled.
+    std::shared_ptr<Node> from_node; // Pointer to the source node.
+    std::shared_ptr<Node> to_node;   // Pointer to the target node.
+    double weight;                   // Weight of the connection.
+    int innovation_nb;               // Innovation number of the connection.
+    bool enabled;                    // Flag indicating whether the connection is enabled or disabled.
 
     /**
      * @brief Constructor for ConnectionGene.
@@ -25,7 +25,7 @@ public:
      * @param innovation Innovation number of the connection.
      * @param enabled Flag indicating whether the connection is enabled or disabled.
      */
-    ConnectionGene(Node *from, Node *to, double w, int innovation, bool enabled);
+    ConnectionGene(std::shared_ptr<Node> from, std::shared_ptr<Node> to, double w, int innovation, bool enabled);
 
     /**
      * @brief Mutates the connection gene based on the NEAT configuration.
@@ -38,7 +38,7 @@ public:
      * @param other The genes to compare with it.
      * @return True if the genes are the same and connection genes, otherwise false.
      */
-    bool is_equal(ConnectionGene *other);
+    bool is_equal(std::shared_ptr<ConnectionGene> other);
 
     /**
      * @brief Creates a clone of the connection gene with specified source and target nodes.
@@ -46,7 +46,7 @@ public:
      * @param to Pointer to the new target node.
      * @return Pointer to the cloned ConnectionGene.
      */
-    ConnectionGene *clone(Node *from, Node *to);
+    std::shared_ptr<ConnectionGene> clone(std::shared_ptr<Node> from, std::shared_ptr<Node> to);
 };
 
 #endif

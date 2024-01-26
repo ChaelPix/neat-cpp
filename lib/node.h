@@ -15,12 +15,12 @@ class ConnectionGene; // Forward declaration
 class Node
 {
 public:
-    int id;                                           // Unique identifier for the node.
-    double input_sum;                                 // Accumulated input sum for the node.
-    double output_value;                              // Output value after activation.
-    std::vector<ConnectionGene *> output_connections; // List of outgoing connections.
-    int layer;                                        // Layer to which the node belongs.
-    ActivationFunction activation_function;           // Activation function of the node.
+    int id;                                                          // Unique identifier for the node.
+    double input_sum;                                                // Accumulated input sum for the node.
+    double output_value;                                             // Output value after activation.
+    std::vector<std::shared_ptr<ConnectionGene>> output_connections; // List of outgoing connections.
+    int layer;                                                       // Layer to which the node belongs.
+    ActivationFunction activation_function;                          // Activation function of the node.
 
     /**
      * @brief Constructor for the Node class.
@@ -52,20 +52,20 @@ public:
      * @param node Pointer to the target node.
      * @return True if connected, false otherwise.
      */
-    bool is_connected_to(Node *node);
+    bool is_connected_to(std::shared_ptr<Node> node);
 
     /**
      * @brief Compare two nodes.
      * @param other The node to compare with it.
      * @return True if the nodes are the same and connection genes, otherwise false.
      */
-    bool is_equal(Node *other);
+    bool is_equal(std::shared_ptr<Node> other);
 
     /**
      * @brief Creates a clone of the node.
      * @return Pointer to the cloned node.
      */
-    Node *clone();
+    std::shared_ptr<Node> clone();
 
 private:
     /**
