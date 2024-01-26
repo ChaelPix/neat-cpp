@@ -194,7 +194,7 @@ void Genome::add_node(std::vector<ConnectionHistory *> &innovation_history)
     genes[random_connection]->enabled = false; // Disable the connection
 
     int new_node_nb = next_node;
-    nodes.push_back(new Node{new_node_nb, config.activation_default});
+    nodes.push_back(new Node(new_node_nb, config.activation_default));
     ++next_node;
 
     // Add a new connection to the new node with a weight of 1
