@@ -46,16 +46,14 @@ int main(int argc, char *argv[])
     int generations = 100;
     p->run(&evaluate_genome, generations, &callback_generation);
 
+    p->best_genome->print_genome();
+
     // Display the results of the best genome
     std::vector<double> result = p->best_genome->feed_forward(inputs);
-    printf("\n");
     if (result[0] - expected >= 0)
         printf("Solution found: %f\n", expected - 1 / p->best_genome->fitness);
     else
         printf("Solution found: %f\n", expected + 1 / p->best_genome->fitness);
-    printf("\n");
-
-    p->best_genome->print_genome();
 
     // Save this genome
     std::string id = p->best_genome->id;

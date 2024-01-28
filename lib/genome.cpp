@@ -121,6 +121,9 @@ std::vector<double> Genome::feed_forward(std::vector<double> input_values)
 {
     try
     {
+        if (inputs != static_cast<int>(input_values.size()))
+            throw std::invalid_argument("The number of inputs must match the number of input nodes.");
+
         // Set the outputs of the input nodes
         for (int i = 0; i < inputs; ++i)
             nodes[i]->output_value = input_values[i];
