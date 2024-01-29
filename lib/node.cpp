@@ -26,19 +26,8 @@ void Node::propagate_output()
             c->to_node->input_sum += c->weight * output_value;
 }
 
-void Node::mutate(const NeatConfig &config, bool is_bias_node)
+void Node::mutate(const NeatConfig &config)
 {
-    if (is_bias_node)
-    {
-        if (randrange() < config.bias_replace_rate)
-            output_value = uniform(config.bias_min_value, config.bias_max_value);
-        else if (randrange() < config.bias_mutate_rate)
-        {
-            output_value += normal(config.bias_init_mean, config.bias_init_stdev) / 50;
-            output_value = std::min(std::max(output_value, config.bias_min_value), config.bias_max_value);
-        }
-    }
-
     if (randrange() < config.activation_mutate_rate)
     {
         std::vector<ActivationFunction> activations_functions = {

@@ -48,13 +48,6 @@ TEST_F(ConfigTest, ValidConfigFile)
         activation_mutate_rate = 0.1
         num_inputs = 10
         num_outputs = 2
-        bias_init_mean = 0.0
-        bias_init_type = normal
-        bias_init_stdev = 1.0
-        bias_max_value = 1.0
-        bias_min_value = -1.0
-        bias_mutate_rate = 0.5
-        bias_replace_rate = 0.1
         compatibility_disjoint_coefficient = 1.0
         compatibility_weight_coefficient = 0.5
         conn_add_prob = 0.1
@@ -99,13 +92,6 @@ TEST_F(ConfigTest, ValidConfigFile)
     ASSERT_EQ(config.activation_mutate_rate, 0.1);
     ASSERT_EQ(config.num_inputs, 10);
     ASSERT_EQ(config.num_outputs, 2);
-    ASSERT_EQ(config.bias_init_mean, 0.0);
-    ASSERT_EQ(config.bias_init_type, "normal");
-    ASSERT_EQ(config.bias_init_stdev, 1.0);
-    ASSERT_EQ(config.bias_max_value, 1.0);
-    ASSERT_EQ(config.bias_min_value, -1.0);
-    ASSERT_EQ(config.bias_mutate_rate, 0.5);
-    ASSERT_EQ(config.bias_replace_rate, 0.1);
     ASSERT_EQ(config.compatibility_disjoint_coefficient, 1.0);
     ASSERT_EQ(config.compatibility_weight_coefficient, 0.5);
     ASSERT_EQ(config.conn_add_prob, 0.1);

@@ -38,10 +38,10 @@ protected:
 
         for (int i = 0; i < num_inputs; ++i)
         {
-            std::shared_ptr<Node> node_input = std::make_shared<Node>(i, "relu");
+            std::shared_ptr<Node> node_input = std::make_shared<Node>(i, "relu", 0);
             for (int j = 0; j < num_outputs; ++j)
             {
-                std::shared_ptr<Node> node_output = std::make_shared<Node>(j, "sigmoid");
+                std::shared_ptr<Node> node_output = std::make_shared<Node>(j, "sigmoid", 1);
                 connections.push_back(std::make_shared<ConnectionHistory>(node_input, node_output, innovation_nb));
                 ++innovation_nb;
             }
@@ -138,7 +138,9 @@ TEST_F(SpeciesTest, AverageWeightDifference)
 
     // Test average weight diff with two genomes a little bit different
     Genome *otherGenomeLittleDifferent = genome->clone();
-    std::vector<std::shared_ptr<ConnectionHistory>> history = {std::make_shared<ConnectionHistory>(nullptr, nullptr, 10)};
+    std::shared_ptr<Node> node1 = std::make_shared<Node>(0, "relu", 0);
+    std::shared_ptr<Node> node2 = std::make_shared<Node>(0, "relu", 1);
+    std::vector<std::shared_ptr<ConnectionHistory>> history = {std::make_shared<ConnectionHistory>(node1, node2, 10)};
     otherGenomeLittleDifferent->mutate(history); // Adjust the parameters as needed
     double resultLittleDifferent = species->average_weight_diff(genome, otherGenomeLittleDifferent);
     ASSERT_GT(resultLittleDifferent, 0.0);

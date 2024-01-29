@@ -16,10 +16,12 @@
 std::string generate_uid(int size)
 {
     const std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    std::string uid;
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    thread_local std::random_device rd;
+    thread_local std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, characters.size() - 1);
+
+    std::string uid;
+    uid.reserve(size); // Reserve space to avoid reallocation inside the loop
 
     for (int i = 0; i < size; ++i)
         uid += characters[dis(gen)];
@@ -51,11 +53,6 @@ Genome::Genome(const NeatConfig &config, bool crossover) : config(config), input
         nodes.push_back(std::make_shared<Node>(i + inputs, config.activation_default, 1));
         ++next_node;
     }
-
-    // bias node
-    nodes.push_back(std::make_shared<Node>(next_node, config.activation_default, 0));
-    bias_node = next_node;
-    ++next_node;
 }
 
 void Genome::fully_connect(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history)
@@ -77,22 +74,6 @@ void Genome::fully_connect(std::vector<std::shared_ptr<ConnectionHistory>> innov
                     connection_innovation_nb,
                     config.enabled_default));
         }
-    }
-
-    for (int i = 0; i < outputs; ++i)
-    {
-        int connection_innovation_nb = get_innovation_number(
-            innovation_history,
-            nodes[bias_node],
-            nodes[inputs + i]);
-
-        genes.push_back(
-            std::make_shared<ConnectionGene>(
-                nodes[bias_node],
-                nodes[inputs + i],
-                new_connection_weight(),
-                connection_innovation_nb,
-                config.enabled_default));
     }
 
     connect_nodes();
@@ -127,9 +108,6 @@ std::vector<double> Genome::feed_forward(std::vector<double> input_values)
         // Set the outputs of the input nodes
         for (int i = 0; i < inputs; ++i)
             nodes[i]->output_value = input_values[i];
-
-        // Output of bias is 1
-        nodes[bias_node]->output_value = 1;
 
         // Engage each node in the network
         for (auto &n : network)
@@ -178,85 +156,50 @@ void Genome::add_node(std::vector<std::shared_ptr<ConnectionHistory>> innovation
     }
 
     int random_connection = randrange(0, genes.size());
-
-    while (genes[random_connection]->from_node == nodes[bias_node] && genes.size() != 1)
-        // Don't disconnect bias
-        random_connection = randrange(0, genes.size());
-
     genes[random_connection]->enabled = false; // Disable the connection
 
     int new_node_nb = next_node;
-    nodes.push_back(std::make_shared<Node>(new_node_nb, config.activation_default));
+    int layer = genes[random_connection]->from_node->layer + 1;
+
+    std::shared_ptr<Node> new_node = std::make_shared<Node>(new_node_nb, config.activation_default, layer);
+    nodes.push_back(new_node);
     ++next_node;
 
     // Add a new connection to the new node with a weight of 1
     int connection_innovation_nb = get_innovation_number(
         innovation_history,
         genes[random_connection]->from_node,
-        get_node(new_node_nb));
+        new_node);
 
     genes.push_back(
         std::make_shared<ConnectionGene>(
             genes[random_connection]->from_node,
-            get_node(new_node_nb),
+            new_node,
             1,
             connection_innovation_nb,
             config.enabled_default));
 
     connection_innovation_nb = get_innovation_number(
         innovation_history,
-        get_node(new_node_nb),
+        new_node,
         genes[random_connection]->to_node);
 
     // Add a new connection from the new node with a weight the same as the disabled connection
     genes.push_back(
         std::make_shared<ConnectionGene>(
-            get_node(new_node_nb),
+            new_node,
             genes[random_connection]->to_node,
             genes[random_connection]->weight,
             connection_innovation_nb,
             config.enabled_default));
 
-    get_node(new_node_nb)->layer = genes[random_connection]->from_node->layer + 1;
-
-    connection_innovation_nb = get_innovation_number(
-        innovation_history,
-        nodes[bias_node],
-        get_node(new_node_nb));
-
-    // Get the value for the bias node
-    double bias_value = 0.0;
-    if (config.bias_init_type == "normal")
-    {
-        bias_value = normal(
-            config.bias_init_mean, config.bias_init_stdev);
-
-        // Keep value between bounds
-        if (bias_value > config.bias_max_value)
-            bias_value = config.bias_max_value;
-        if (bias_value < config.bias_min_value)
-            bias_value = config.bias_min_value;
-    }
-    else if (config.bias_init_type == "uniform")
-        bias_value = uniform(
-            config.bias_min_value, config.bias_max_value);
-
-    // Connect the bias to the new node
-    genes.push_back(
-        std::make_shared<ConnectionGene>(
-            nodes[bias_node],
-            get_node(new_node_nb),
-            bias_value,
-            connection_innovation_nb,
-            config.enabled_default));
-
     // If the layer of the new node is equal to the layer of the output node of the old connection,
     // then a new layer needs to be created
-    if (get_node(new_node_nb)->layer == genes[random_connection]->to_node->layer)
+    if (new_node->layer == genes[random_connection]->to_node->layer)
     {
         for (auto &n : nodes)
             // Don't include this newest node
-            if (n->layer >= get_node(new_node_nb)->layer)
+            if (n->layer >= new_node->layer)
                 n->layer += 1;
         ++layers;
     }
@@ -266,9 +209,9 @@ void Genome::add_node(std::vector<std::shared_ptr<ConnectionHistory>> innovation
 
 void Genome::remove_node()
 {
-    // Select a random node by excluding inputs, outputs, and bias nodes
-    auto it = std::find_if(nodes.begin() + bias_node, nodes.end(), [&](const std::shared_ptr<Node> n)
-                           { return n->layer != 0 && n->layer != layers && n->id != bias_node; });
+    // Select a random node by excluding inputs, outputs
+    auto it = std::find_if(nodes.begin(), nodes.end(), [&](const std::shared_ptr<Node> n)
+                           { return n->layer != 0 && n->layer != layers; });
 
     if (it != nodes.end())
     {
@@ -424,10 +367,7 @@ void Genome::mutate(std::vector<std::shared_ptr<ConnectionHistory>> innovation_h
             add_connection(innovation_history);
 
         for (auto &node : nodes)
-        {
-            bool is_bias_node = (&node == &nodes[bias_node]);
-            node->mutate(config, is_bias_node);
-        }
+            node->mutate(config);
 
         for (auto &gene : genes)
             gene->mutate(config);
@@ -457,7 +397,6 @@ Genome *Genome::crossover(Genome *parent) const
     child->nodes.clear();
     child->layers = layers;
     child->next_node = next_node;
-    child->bias_node = bias_node;
 
     std::vector<std::shared_ptr<ConnectionGene>> child_genes;
     std::vector<bool> is_enabled;
@@ -529,7 +468,9 @@ void Genome::print_genome() const
 {
     std::cout << "------------------------------ GENOME ----------------------------\n";
     std::cout << "⚪️ Resume: {"
-              << "layers: " << layers << ", bias nodes: " << bias_node << ", nodes: " << nodes.size() << "}\n";
+              << "layers: " << layers
+              << ", nodes: " << nodes.size()
+              << "}\n";
     std::cout << "⚪️ Connection genes:\n";
 
     for (const auto &gene : genes)
@@ -608,7 +549,6 @@ Genome *Genome::clone()
 
     clone->layers = layers;
     clone->next_node = next_node;
-    clone->bias_node = bias_node;
     clone->fitness = fitness;
     clone->connect_nodes();
 

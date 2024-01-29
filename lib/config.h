@@ -29,14 +29,7 @@ struct NeatConfig
     ActivationFunction activation_default;
     double activation_mutate_rate;
     int num_inputs;
-    int num_outputs; // enter long | enter short | close long | close short | wait
-    double bias_init_mean;
-    DistributionType bias_init_type;
-    double bias_init_stdev;
-    double bias_max_value;
-    double bias_min_value;
-    double bias_mutate_rate;
-    double bias_replace_rate;
+    int num_outputs;
     double compatibility_disjoint_coefficient;
     double compatibility_weight_coefficient;
     double conn_add_prob;

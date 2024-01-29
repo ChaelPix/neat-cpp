@@ -38,20 +38,6 @@ protected:
 
     void test_mutate()
     {
-        // Test mutation of a bias node
-        config.bias_mutate_rate = 1.0;
-        config.bias_replace_rate = 0.0;
-        node->output_value = 0.0;
-        node->mutate(config, true); // true indicates bias node
-        ASSERT_NE(node->output_value, 0.0);
-
-        // Test mutation of a non-bias node
-        config.bias_mutate_rate = 0.0;
-        config.bias_replace_rate = 1.0;
-        node->output_value = 0.0;
-        node->mutate(config, true);
-        ASSERT_NE(node->output_value, 0.0);
-
         // Test activation mutation
         config.activation_mutate_rate = 1.0;
         node->mutate(config);

@@ -26,9 +26,9 @@ public:
      * @brief Constructor for the Node class.
      * @param id Unique identifier for the node.
      * @param activation_function Activation function of the node.
-     * @param layer Layer to which the node belongs (default is 0).
+     * @param layer Layer to which the node belongs.
      */
-    Node(int id, ActivationFunction activation_function, int layer = 0);
+    Node(int id, ActivationFunction activation_function, int layer);
 
     /**
      * @brief Activate the node using its activation function.
@@ -43,9 +43,8 @@ public:
     /**
      * @brief Mutates the node's properties based on the NEAT algorithm.
      * @param config NEAT configuration settings.
-     * @param is_bias_node Indicates whether the node is a bias node.
      */
-    void mutate(const NeatConfig &config, bool is_bias_node = false);
+    void mutate(const NeatConfig &config);
 
     /**
      * @brief Checks if the node is connected to another node.

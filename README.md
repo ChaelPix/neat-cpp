@@ -109,13 +109,6 @@ The default_config.py file contains configuration parameters for the NEAT algori
 
   - `node_add_prob`: Probability of adding a new node.
   - `node_delete_prob`: Probability of deleting an existing node.
-  - `bias_init_mean`: Mean for the initialization of bias values.
-  - `bias_init_type`: Initialization type for bias values ("normal" or "uniform").
-  - `bias_init_stdev`: Standard deviation for the initialization of bias values.
-  - `bias_max_value`: Maximum value for bias values.
-  - `bias_min_value`: Minimum value for bias values.
-  - `bias_mutate_rate`: Mutation rate for bias values.
-  - `bias_replace_rate`: Replacement rate for bias values.
 
 - **Stagnation Settings**
 

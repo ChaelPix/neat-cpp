@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     // Initialize population
     Population *p = new Population(config);
 
-    // // Run NEAT algorithm
+    // Run NEAT algorithm
     int generations = 1000;
     p->run(&evaluate_genome, generations, &callback_generation);
 

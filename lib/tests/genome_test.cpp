@@ -40,11 +40,11 @@ TEST_F(TestGenome, Init)
 
     ASSERT_TRUE(genome->id.size() > 0);
     ASSERT_TRUE(genome->genes.empty());
-    ASSERT_EQ(genome->nodes.size(), 5);
+    ASSERT_EQ(genome->nodes.size(), 4);
     ASSERT_EQ(genome->inputs, 2);
     ASSERT_EQ(genome->outputs, 2);
     ASSERT_EQ(genome->layers, 2);
-    ASSERT_EQ(genome->next_node, 5);
+    ASSERT_EQ(genome->next_node, 4);
     ASSERT_TRUE(genome->network.empty());
     ASSERT_EQ(genome->fitness, 0);
 }
@@ -55,7 +55,7 @@ TEST_F(TestGenome, FullyConnect)
     genome->fully_connect(connection_history);
 
     // Check if the genes are generated properly
-    ASSERT_EQ(genome->genes.size(), 6);
+    ASSERT_EQ(genome->genes.size(), 4);
     // First input node
     ASSERT_EQ(genome->genes[0]->from_node->id, 0);
     ASSERT_EQ(genome->genes[0]->to_node->id, 2);
@@ -66,11 +66,6 @@ TEST_F(TestGenome, FullyConnect)
     ASSERT_EQ(genome->genes[2]->to_node->id, 2);
     ASSERT_EQ(genome->genes[3]->from_node->id, 1);
     ASSERT_EQ(genome->genes[3]->to_node->id, 3);
-    // Bias node
-    ASSERT_EQ(genome->genes[4]->from_node->id, 4);
-    ASSERT_EQ(genome->genes[4]->to_node->id, 2);
-    ASSERT_EQ(genome->genes[5]->from_node->id, 4);
-    ASSERT_EQ(genome->genes[5]->to_node->id, 3);
 }
 
 TEST_F(TestGenome, GetNode)
@@ -115,13 +110,12 @@ TEST_F(TestGenome, GenerateNetwork)
     genome->generate_network();
 
     // Check if the network is generated properly
-    ASSERT_EQ(genome->network.size(), 5);
+    ASSERT_EQ(genome->network.size(), 4);
     // 2 input nodes + 2 output nodes
     ASSERT_EQ(genome->network[0]->id, 0); // First input node
     ASSERT_EQ(genome->network[1]->id, 1); // Second input node
-    ASSERT_EQ(genome->network[2]->id, 4); // Bias node
-    ASSERT_EQ(genome->network[3]->id, 2); // First output node
-    ASSERT_EQ(genome->network[4]->id, 3); // Second output node
+    ASSERT_EQ(genome->network[2]->id, 2); // First output node
+    ASSERT_EQ(genome->network[3]->id, 3); // Second output node
 }
 
 TEST_F(TestGenome, AddNode)
@@ -135,7 +129,7 @@ TEST_F(TestGenome, AddNode)
 
     // Check if a new node and connections are added properly
     // 1 new connection + 2 existing connections
-    ASSERT_EQ(genome->genes.size(), initialNumGenes + 3);
+    ASSERT_EQ(genome->genes.size(), initialNumGenes + 2);
     // 1 new node
     ASSERT_EQ(genome->nodes.size(), initialNumNodes + 1);
 }

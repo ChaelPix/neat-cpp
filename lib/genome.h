@@ -24,7 +24,6 @@ public:
     int outputs;                                        // Number of output nodes.
     int layers;                                         // Number of layers in the neural network.
     int next_node;                                      // ID for the next node to be added.
-    int bias_node;                                      // ID of the bias node.
     std::vector<std::shared_ptr<Node>> network;         // Fully connected network.
     double fitness;                                     // Fitness score of the genome.
 

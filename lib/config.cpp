@@ -48,20 +48,6 @@ NeatConfig load_config_from_file(const std::string &filename)
                 config.num_inputs = std::stoi(value);
             else if (key == "num_outputs")
                 config.num_outputs = std::stoi(value);
-            else if (key == "bias_init_mean")
-                config.bias_init_mean = std::stod(value);
-            else if (key == "bias_init_type")
-                config.bias_init_type = value;
-            else if (key == "bias_init_stdev")
-                config.bias_init_stdev = std::stod(value);
-            else if (key == "bias_max_value")
-                config.bias_max_value = std::stod(value);
-            else if (key == "bias_min_value")
-                config.bias_min_value = std::stod(value);
-            else if (key == "bias_mutate_rate")
-                config.bias_mutate_rate = std::stod(value);
-            else if (key == "bias_replace_rate")
-                config.bias_replace_rate = std::stod(value);
             else if (key == "compatibility_disjoint_coefficient")
                 config.compatibility_disjoint_coefficient = std::stod(value);
             else if (key == "compatibility_weight_coefficient")
