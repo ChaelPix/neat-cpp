@@ -83,8 +83,6 @@ The default_config.py file contains configuration parameters for the NEAT algori
 
 - **Genome Settings**
 
-  - `activation_default`: Default activation function for neurons.
-  - `activation_mutate_rate`: Mutation rate for activation functions.
   - `num_inputs`: Number of input nodes in the neural network.
   - `num_outputs`: Number of output nodes in the neural network.
 
@@ -93,7 +91,6 @@ The default_config.py file contains configuration parameters for the NEAT algori
   - `compatibility_disjoint_coefficient`: Coefficient for compatibility calculation related to disjoint genes.
   - `compatibility_weight_coefficient`: Coefficient for compatibility calculation related to weight differences.
   - `conn_add_prob`: Probability of adding a new connection.
-  - `conn_delete_prob`: Probability of deleting an existing connection.
   - `enabled_default`: Default state (enabled or disabled) for new connections.
   - `enabled_mutate_rate`: Mutation rate for connection enable/disable state.
   - `initial_connections`: Type of initial connections ("none" or "full").
@@ -108,7 +105,8 @@ The default_config.py file contains configuration parameters for the NEAT algori
 - **Node Settings**
 
   - `node_add_prob`: Probability of adding a new node.
-  - `node_delete_prob`: Probability of deleting an existing node.
+  - `activation_default`: Default activation function for neurons.
+  - `activation_mutate_rate`: Mutation rate for activation functions.
 
 - **Stagnation Settings**
 

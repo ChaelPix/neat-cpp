@@ -58,10 +58,16 @@ void Population::run(std::function<void(Genome *, int)> evaluate_genome, int nb_
         reproduce_species();
         reset_on_extinction();
 
+        // Callback function for each generation
         if (callback_generation)
             callback_generation(this, i);
 
+        // Stop the algorithm if the fitness threshold is reached
         if (!config.no_fitness_termination && best_genome->fitness > config.fitness_threshold)
+            break;
+
+        // Stop the algorithm if the best fitness is infinity
+        if (best_fitness == std::numeric_limits<double>::infinity())
             break;
     }
 }

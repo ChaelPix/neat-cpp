@@ -100,18 +100,21 @@ TEST_F(SpeciesTest, ExcessDisjointGenes)
     delete otherGenomeSame;
 
     // Test with two totally different genomes
-    Genome *otherGenomeDifferent = new Genome(config);
-    std::vector<std::shared_ptr<ConnectionHistory>> otherConnectionHistoryDifferent = init_connection_history(10, 2);
-    otherGenomeDifferent->fully_connect(otherConnectionHistoryDifferent);
-    double resultDifferent = species->get_excess_disjoint_genes(genome, otherGenomeDifferent);
+    Genome *otherGenomeTotallyDifferent = new Genome(config);
+    std::vector<std::shared_ptr<ConnectionHistory>> genomeTotallyDifferentHistory = init_connection_history(10, 2);
+    otherGenomeTotallyDifferent->fully_connect(genomeTotallyDifferentHistory);
+    double resultDifferent = species->get_excess_disjoint_genes(genome, otherGenomeTotallyDifferent);
     ASSERT_GT(resultDifferent, 0.0);
-    delete otherGenomeDifferent;
+    delete otherGenomeTotallyDifferent;
 
     // Test with two genomes a little different
     Genome *otherGenomeLittleDifferent = genome->clone();
-    otherGenomeLittleDifferent->remove_connection();
+    std::vector<std::shared_ptr<ConnectionHistory>>
+        genomeLittleDifferentHistory = init_connection_history(10, 2);
+    otherGenomeLittleDifferent->add_node(genomeLittleDifferentHistory);
     double resultLittleDifferent = species->get_excess_disjoint_genes(genome, otherGenomeLittleDifferent);
-    ASSERT_DOUBLE_EQ(resultLittleDifferent, 1.0);
+    ASSERT_DOUBLE_EQ(resultLittleDifferent, 2.0);
+    delete otherGenomeLittleDifferent;
 }
 
 TEST_F(SpeciesTest, AverageWeightDifference)
@@ -138,10 +141,10 @@ TEST_F(SpeciesTest, AverageWeightDifference)
 
     // Test average weight diff with two genomes a little bit different
     Genome *otherGenomeLittleDifferent = genome->clone();
-    std::shared_ptr<Node> node1 = std::make_shared<Node>(0, "relu", 0);
-    std::shared_ptr<Node> node2 = std::make_shared<Node>(0, "relu", 1);
-    std::vector<std::shared_ptr<ConnectionHistory>> history = {std::make_shared<ConnectionHistory>(node1, node2, 10)};
-    otherGenomeLittleDifferent->mutate(history); // Adjust the parameters as needed
+    otherGenomeLittleDifferent->config.weight_mutate_rate = 1.0;
+    std::vector<std::shared_ptr<ConnectionHistory>>
+        otherGenomeLittleDifferentHistory = init_connection_history(10, 2);
+    otherGenomeLittleDifferent->mutate(otherGenomeLittleDifferentHistory);
     double resultLittleDifferent = species->average_weight_diff(genome, otherGenomeLittleDifferent);
     ASSERT_GT(resultLittleDifferent, 0.0);
     delete otherGenomeLittleDifferent;

@@ -197,35 +197,14 @@ void Genome::add_node(std::vector<std::shared_ptr<ConnectionHistory>> innovation
     // then a new layer needs to be created
     if (new_node->layer == genes[random_connection]->to_node->layer)
     {
-        for (auto &n : nodes)
-            // Don't include this newest node
-            if (n->layer >= new_node->layer)
-                n->layer += 1;
+        for (size_t i = 0; i < nodes.size() - 1; ++i)
+            // Don't include the new node
+            if (nodes[i]->layer >= new_node->layer)
+                nodes[i]->layer += 1;
         ++layers;
     }
 
     connect_nodes();
-}
-
-void Genome::remove_node()
-{
-    // Select a random node by excluding inputs, outputs
-    auto it = std::find_if(nodes.begin(), nodes.end(), [&](const std::shared_ptr<Node> n)
-                           { return n->layer != 0 && n->layer != layers; });
-
-    if (it != nodes.end())
-    {
-        std::shared_ptr<Node> random_node = *it;
-        nodes.erase(it);
-
-        // Remove the connections that are connected to the random node selected
-        auto removeCondition = [&](const std::shared_ptr<ConnectionGene> g)
-        {
-            return g->from_node == random_node || g->to_node == random_node;
-        };
-
-        genes.erase(std::remove_if(genes.begin(), genes.end(), removeCondition), genes.end());
-    }
 }
 
 void Genome::add_connection(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history)
@@ -240,14 +219,14 @@ void Genome::add_connection(std::vector<std::shared_ptr<ConnectionHistory>> inno
     };
 
     // Get random nodes
-    int random_node_1 = randrange(0, nodes.size());
-    int random_node_2 = randrange(0, nodes.size());
+    int random_node_1 = rand() % nodes.size();
+    int random_node_2 = rand() % nodes.size();
 
     while (!random_connection_nodes_are_valid(random_node_1, random_node_2))
     {
         // While the random nodes are not valid, get new ones
-        random_node_1 = randrange(0, nodes.size());
-        random_node_2 = randrange(0, nodes.size());
+        random_node_1 = rand() % nodes.size();
+        random_node_2 = rand() % nodes.size();
     }
 
     int temp;
@@ -276,15 +255,6 @@ void Genome::add_connection(std::vector<std::shared_ptr<ConnectionHistory>> inno
             config.enabled_default));
 
     connect_nodes();
-}
-
-void Genome::remove_connection()
-{
-    if (!genes.empty())
-    {
-        auto random_gene = genes.begin() + randrange(0, genes.size());
-        genes.erase(random_gene);
-    }
 }
 
 double Genome::new_connection_weight() const
@@ -375,14 +345,8 @@ void Genome::mutate(std::vector<std::shared_ptr<ConnectionHistory>> innovation_h
         if (randrange() < config.conn_add_prob)
             add_connection(innovation_history);
 
-        if (randrange() < config.conn_delete_prob)
-            remove_connection();
-
         if (randrange() < config.node_add_prob)
             add_node(innovation_history);
-
-        if (randrange() < config.node_delete_prob)
-            remove_node();
     }
     catch (const std::exception &e)
     {
