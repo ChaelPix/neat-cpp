@@ -13,7 +13,7 @@ protected:
     void SetUp() override
     {
         // Mock NeatConfig
-        config = load_config_from_file("default_config.txt");
+        config = load_config("default_config.txt");
         config.num_inputs = 5;
         config.num_outputs = 2;
         config.population_size = 10;

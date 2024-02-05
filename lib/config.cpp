@@ -5,7 +5,7 @@
 #include "config.h"
 
 // Function to load configuration from a text file
-NeatConfig load_config_from_file(const std::string &filename)
+NeatConfig load_config(const std::string &filename)
 {
     NeatConfig config;
 

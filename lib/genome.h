@@ -67,10 +67,20 @@ public:
     void add_node(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history);
 
     /**
+     * @brief Removes a node from the genome.
+     */
+    void remove_node();
+
+    /**
      * @brief Adds a connection to the genome.
      * @param innovation_history List of connection history for innovation tracking.
      */
     void add_connection(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history);
+
+    /**
+     * @brief Removes a connection from the genome.
+     */
+    void remove_connection();
 
     /**
      * @brief Generates a new random connection weight based on configuration settings.

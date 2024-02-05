@@ -68,6 +68,6 @@ struct NeatConfig
     double bad_species_threshold;
 };
 
-NeatConfig load_config_from_file(const std::string &filename);
+NeatConfig load_config(const std::string &filename);
 
 #endif

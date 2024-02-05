@@ -19,7 +19,7 @@ protected:
     void SetUp() override
     {
         // Set up NeatConfig
-        config = load_config_from_file("default_config.txt");
+        config = load_config("default_config.txt");
         config.num_inputs = 2;
         config.num_outputs = 2;
 
@@ -134,6 +134,23 @@ TEST_F(TestGenome, AddNode)
     ASSERT_EQ(genome->nodes.size(), initialNumNodes + 1);
 }
 
+TEST_F(TestGenome, RemoveNode)
+{
+    Genome *genome = new Genome(config);
+    genome->fully_connect(connection_history);
+    genome->add_node(connection_history);
+    const size_t initialNumGenes = genome->genes.size();
+    const size_t initialNumNodes = genome->nodes.size();
+
+    genome->remove_node();
+
+    // Check if a node and its connections are removed properly
+    // At least one connection removed
+    ASSERT_LT(genome->genes.size(), initialNumGenes);
+    // 1 node removed
+    ASSERT_EQ(genome->nodes.size(), initialNumNodes - 1);
+}
+
 TEST_F(TestGenome, AddConnection)
 {
     Genome *genome = new Genome(config);
@@ -143,6 +160,18 @@ TEST_F(TestGenome, AddConnection)
 
     // Check if a new connection is added properly
     ASSERT_EQ(genome->genes.size(), initialNumGenes + 1);
+}
+
+TEST_F(TestGenome, RemoveConnection)
+{
+    Genome *genome = new Genome(config);
+    genome->fully_connect(connection_history);
+    const size_t initialNumGenes = genome->genes.size();
+
+    genome->remove_connection();
+
+    // Check if a connection is removed properly
+    ASSERT_EQ(genome->genes.size(), initialNumGenes - 1);
 }
 
 TEST_F(TestGenome, NewConnectionWeight)

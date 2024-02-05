@@ -17,7 +17,7 @@ protected:
 
     void SetUp() override
     {
-        config = load_config_from_file("default_config.txt");
+        config = load_config("default_config.txt");
         genome = new Genome(config);
         fromNode = std::make_shared<Node>(1, "sigmoid", 1);
         toNode = std::make_shared<Node>(2, "sigmoid", 2);

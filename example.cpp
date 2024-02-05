@@ -17,16 +17,16 @@ void evaluate_genome(Genome *g, int generation)
     g->fitness = 1 / abs(expected - result[0]);
 }
 
-void callback_generation(Population *population, int generation)
+void callback_generation(Population *p, int generation)
 {
     printf("Generation: %d\n", generation);
-    printf("Best fitness: %f\n", population->best_fitness);
+    printf("Best fitness: %f\n", p->best_fitness);
 }
 
 int main(int argc, char *argv[])
 {
     // Initialize NEAT configuration
-    NeatConfig config = load_config_from_file("default_config.txt");
+    NeatConfig config = load_config("default_config.txt");
 
     // Initialize population
     Population *p = new Population(config);

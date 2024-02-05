@@ -14,7 +14,7 @@ protected:
 
     void SetUp() override
     {
-        config = load_config_from_file("default_config.txt");
+        config = load_config("default_config.txt");
         config.num_inputs = 10;
         config.num_outputs = 2;
 
@@ -69,7 +69,7 @@ TEST_F(SpeciesTest, SameSpeciesTrue)
 
 TEST_F(SpeciesTest, SameSpeciesFalse)
 {
-    NeatConfig otherConfig = load_config_from_file("default_config.txt");
+    NeatConfig otherConfig = load_config("default_config.txt");
     otherConfig.num_inputs = 5;
     otherConfig.num_outputs = 1;
 
@@ -100,20 +100,18 @@ TEST_F(SpeciesTest, ExcessDisjointGenes)
     delete otherGenomeSame;
 
     // Test with two totally different genomes
-    Genome *otherGenomeTotallyDifferent = new Genome(config);
-    std::vector<std::shared_ptr<ConnectionHistory>> genomeTotallyDifferentHistory = init_connection_history(10, 2);
-    otherGenomeTotallyDifferent->fully_connect(genomeTotallyDifferentHistory);
-    double resultDifferent = species->get_excess_disjoint_genes(genome, otherGenomeTotallyDifferent);
+    Genome *otherGenomeDifferent = new Genome(config);
+    std::vector<std::shared_ptr<ConnectionHistory>> otherConnectionHistoryDifferent = init_connection_history(10, 2);
+    otherGenomeDifferent->fully_connect(otherConnectionHistoryDifferent);
+    double resultDifferent = species->get_excess_disjoint_genes(genome, otherGenomeDifferent);
     ASSERT_GT(resultDifferent, 0.0);
-    delete otherGenomeTotallyDifferent;
+    delete otherGenomeDifferent;
 
     // Test with two genomes a little different
     Genome *otherGenomeLittleDifferent = genome->clone();
-    std::vector<std::shared_ptr<ConnectionHistory>>
-        genomeLittleDifferentHistory = init_connection_history(10, 2);
-    otherGenomeLittleDifferent->add_node(genomeLittleDifferentHistory);
+    otherGenomeLittleDifferent->remove_connection();
     double resultLittleDifferent = species->get_excess_disjoint_genes(genome, otherGenomeLittleDifferent);
-    ASSERT_DOUBLE_EQ(resultLittleDifferent, 2.0);
+    ASSERT_DOUBLE_EQ(resultLittleDifferent, 1.0);
     delete otherGenomeLittleDifferent;
 }
 

@@ -11,7 +11,7 @@ protected:
 
     void SetUp() override
     {
-        config = load_config_from_file("default_config.txt");
+        config = load_config("default_config.txt");
         node = std::make_shared<Node>(1, "relu", 1);
     }
 
