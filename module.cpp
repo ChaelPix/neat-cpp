@@ -1,7 +1,7 @@
-#include "pybind11/include/pybind11/pybind11.h"
-#include "pybind11/include/pybind11/functional.h"
-#include "pybind11/include/pybind11/iostream.h"
-#include "pybind11/include/pybind11/stl.h"
+#include "pybind11/pybind11.h"
+#include "pybind11/functional.h"
+#include "pybind11/iostream.h"
+#include "pybind11/stl.h"
 #include <thread>
 #include "lib/config.h"
 #include "lib/population.h"
