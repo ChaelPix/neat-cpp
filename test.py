@@ -23,7 +23,7 @@ def main():
     generations: int = 100
     p.run(evaluate_genome, generations, callback_generation)
 
-    p.best_genome.print_genome()
+    p.best_genome.print()
 
     # Display the results of the best genome
     result = p.best_genome.feed_forward(inputs)

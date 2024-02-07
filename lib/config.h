@@ -68,6 +68,11 @@ struct NeatConfig
     double bad_species_threshold;
 };
 
+/**
+ * @brief Loads NEAT configuration from a file.
+ * @param filename Name of the file containing the configuration settings.
+ * @return NeatConfig object.
+ */
 NeatConfig load_config(const std::string &filename);
 
 #endif

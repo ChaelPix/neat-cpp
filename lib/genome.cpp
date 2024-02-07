@@ -464,7 +464,7 @@ int Genome::matching_gene(Genome *parent, int innovation) const
     return -1; // No matching gene found
 }
 
-void Genome::print_genome() const
+void Genome::print() const
 {
     std::cout << "------------------------------ GENOME ----------------------------\n";
     std::cout << "⚪️ Resume: {"

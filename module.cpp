@@ -11,7 +11,7 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(neat, m)
 {
-    m.doc() = "Neat algorithm implemented in c++";
+    m.doc() = "NEAT algorithm module for Python";
 
     py::class_<NeatConfig>(m, "NeatConfig")
         .def(py::init<>())
@@ -149,19 +149,23 @@ PYBIND11_MODULE(neat, m)
                 else
                     throw std::invalid_argument("Invalid key"); });
 
-    m.def("load_config", &load_config, "Load the module config");
+    m.def("load_config", &load_config, "Loads NEAT configuration from a file.");
 
     py::class_<Population>(m, "Population")
         .def(py::init<const NeatConfig &>())
-        .def_readonly("best_fitness", &Population::best_fitness)
-        .def_readonly("best_genome", &Population::best_genome)
-        .def("run", &Population::run, py::call_guard<py::gil_scoped_release>());
+        .def_readonly("generation", &Population::generation, "Current generation number.")
+        .def_readonly("best_fitness", &Population::best_fitness, "Fitness of the best genome.")
+        .def_readonly("average_fitness", &Population::average_fitness, "Average fitness of the population.")
+        .def_readonly("best_genome", &Population::best_genome, "Best genome in the population.")
+        .def_readonly("genomes", &Population::genomes, "List of genomes in the population.")
+        .def("run", &Population::run, py::call_guard<py::gil_scoped_release>(), "Runs the NEAT algorithm for a specified number of generations.");
 
     py::class_<Genome>(m, "Genome")
         .def(py::init<const NeatConfig &, bool>())
-        .def_readonly("id", &Genome::id)
-        .def_readwrite("fitness", &Genome::fitness)
-        .def("feed_forward", &Genome::feed_forward)
-        .def("print_genome", &Genome::print_genome)
-        .def("save", &Genome::save);
+        .def_readonly("id", &Genome::id, "Unique identifier for the genome.")
+        .def_readwrite("fitness", &Genome::fitness, "Fitness score of the genome.")
+        .def("feed_forward", &Genome::feed_forward, "Performs a feed-forward operation on the neural network.")
+        .def("print", &Genome::print, "Print the genome's structure.")
+        .def("save", &Genome::save, "Saves the genome to a binary file.")
+        .def("load", &Genome::load, "Loads the genome from a binary file.");
 }

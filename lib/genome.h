@@ -125,10 +125,9 @@ public:
     int matching_gene(Genome *parent, int innovation) const;
 
     /**
-     * @brief Creates a clone of the genome.
-     * @return Cloned genome.
+     * @brief Print the genome's structure.
      */
-    void print_genome() const;
+    void print() const;
 
     /**
      * @brief Compare two genomes.
