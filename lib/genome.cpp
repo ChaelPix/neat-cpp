@@ -676,6 +676,7 @@ Genome *Genome::load(const std::string &file_path)
         }
 
         std::cout << "Genome loaded from '" << file_path << "'" << std::endl;
+        loadedGenome->generate_network();
         return loadedGenome;
     }
     catch (const std::exception &e)
