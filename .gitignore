@@ -2,6 +2,7 @@
 build/
 main.dSYM/
 cache/
+temp/
 
 # Macos
 .DS_Store
