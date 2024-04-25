@@ -167,5 +167,5 @@ PYBIND11_MODULE(neat, m)
         .def("feed_forward", &Genome::feed_forward, "Performs a feed-forward operation on the neural network.")
         .def("print", &Genome::print, "Print the genome's structure.")
         .def("save", &Genome::save, "Saves the genome to a binary file.")
-        .def("load", &Genome::load, "Loads the genome from a binary file.");
+        .def_static("load", &Genome::load, "Loads the genome from a binary file.");
 }

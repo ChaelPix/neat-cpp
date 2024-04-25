@@ -36,7 +36,11 @@ def main():
 
     # Save this genome
     id = p.best_genome.id
-    p.best_genome.save("./cache/genomes/genome_" + id + ".pkl")
+    p.best_genome.save("./cache/genomes/genome_" + id + ".json")
+
+    # Load the genome
+    g = neat.Genome.load("./cache/genomes/genome_" + id + ".json")
+    g.print()
 
 
 if __name__ == '__main__':
