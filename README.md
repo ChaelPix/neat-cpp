@@ -56,10 +56,15 @@ int main(int argc, char *argv[])
         printf("Solution found: %f\n", expected + 1 / p->best_genome->fitness);
 
     // Save this genome
-    std::string id = p->best_genome->id;
-    p->best_genome->save("./cache/genomes/genome_" + id + ".pkl");
+    std::string save_file = "./cache/genomes/genome_" + p->best_genome->id + ".json";
+    p->best_genome->save(save_file);
+
+    // Load the genome
+    Genome *g = Genome::load(save_file);
+    g->print();
 
     delete p;
+    delete g;
 
     return 0;
 }
