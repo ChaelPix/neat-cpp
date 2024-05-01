@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <fstream>
 #include <filesystem>
-#include <nlohmann/json.hpp>
+#include "json.hpp"
 #include "math_utils.h"
 #include "config.h"
 #include "node.h"
