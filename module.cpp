@@ -3,19 +3,20 @@
 #include "pybind11/iostream.h"
 #include "pybind11/stl.h"
 #include <thread>
-#include "lib/config.h"
-#include "lib/population.h"
-#include "lib/genome.h"
+#include "lib/config.hpp"
+#include "lib/population.hpp"
+#include "lib/genome.hpp"
 
 namespace py = pybind11;
+namespace neat_cpp = neat;
 
 PYBIND11_MODULE(neat, m)
 {
     m.doc() = "NEAT algorithm module for Python";
 
-    py::class_<NeatConfig>(m, "NeatConfig")
+    py::class_<neat::Config>(m, "NeatConfig")
         .def(py::init<>())
-        .def("__getitem__", [](const NeatConfig &config, std::string key) -> py::object
+        .def("__getitem__", [](const neat_cpp::Config &config, std::string key) -> py::object
              {
                  if (key == "population_size")
                      return py::cast(config.population_size);
@@ -82,7 +83,7 @@ PYBIND11_MODULE(neat, m)
                  else
                      throw std::invalid_argument("Invalid key"); })
 
-        .def("__setitem__", [](NeatConfig &config, std::string key, py::object value)
+        .def("__setitem__", [](neat_cpp::Config &config, std::string key, py::object value)
              {
                 if (key == "population_size")
                     config.population_size = value.cast<decltype(config.population_size)>();
@@ -149,23 +150,23 @@ PYBIND11_MODULE(neat, m)
                 else
                     throw std::invalid_argument("Invalid key"); });
 
-    m.def("load_config", &load_config, "Loads NEAT configuration from a file.");
+    m.def("load_config", &neat_cpp::load_config, "Loads NEAT configuration from a file.");
 
-    py::class_<Population>(m, "Population")
-        .def(py::init<const NeatConfig &>())
-        .def_readonly("generation", &Population::generation, "Current generation number.")
-        .def_readonly("best_fitness", &Population::best_fitness, "Fitness of the best genome.")
-        .def_readonly("average_fitness", &Population::average_fitness, "Average fitness of the population.")
-        .def_readonly("best_genome", &Population::best_genome, "Best genome in the population.")
-        .def_readonly("genomes", &Population::genomes, "List of genomes in the population.")
-        .def("run", &Population::run, py::call_guard<py::gil_scoped_release>(), "Runs the NEAT algorithm for a specified number of generations.");
+    py::class_<neat_cpp::Population>(m, "Population")
+        .def(py::init<const neat_cpp::Config &>())
+        .def_readonly("generation", &neat_cpp::Population::generation, "Current generation number.")
+        .def_readonly("best_fitness", &neat_cpp::Population::best_fitness, "Fitness of the best genome.")
+        .def_readonly("average_fitness", &neat_cpp::Population::average_fitness, "Average fitness of the population.")
+        .def_readonly("best_genome", &neat_cpp::Population::best_genome, "Best genome in the population.")
+        .def_readonly("genomes", &neat_cpp::Population::genomes, "List of genomes in the population.")
+        .def("run", &neat_cpp::Population::run, py::call_guard<py::gil_scoped_release>(), "Runs the NEAT algorithm for a specified number of generations.");
 
-    py::class_<Genome>(m, "Genome")
-        .def(py::init<const NeatConfig &, bool>())
-        .def_readonly("id", &Genome::id, "Unique identifier for the genome.")
-        .def_readwrite("fitness", &Genome::fitness, "Fitness score of the genome.")
-        .def("feed_forward", &Genome::feed_forward, "Performs a feed-forward operation on the neural network.")
-        .def("print", &Genome::print, "Print the genome's structure.")
-        .def("save", &Genome::save, "Saves the genome to a binary file.")
-        .def_static("load", &Genome::load, "Loads the genome from a binary file.");
+    py::class_<neat::Genome>(m, "Genome")
+        .def(py::init<const neat_cpp::Config &, bool>())
+        .def_readonly("id", &neat_cpp::Genome::id, "Unique identifier for the genome.")
+        .def_readwrite("fitness", &neat_cpp::Genome::fitness, "Fitness score of the genome.")
+        .def("feed_forward", &neat_cpp::Genome::feed_forward, "Performs a feed-forward operation on the neural network.")
+        .def("print", &neat_cpp::Genome::print, "Print the genome's structure.")
+        .def("save", &neat_cpp::Genome::save, "Saves the genome to a binary file.")
+        .def_static("load", &neat_cpp::Genome::load, "Loads the genome from a binary file.");
 }

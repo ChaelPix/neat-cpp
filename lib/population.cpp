@@ -4,13 +4,13 @@
 #include <algorithm>
 #include <functional>
 #include <thread>
-#include "config.h"
-#include "genome.h"
-#include "connection_history.h"
-#include "species.h"
-#include "population.h"
+#include "config.hpp"
+#include "genome.hpp"
+#include "connection_history.hpp"
+#include "species.hpp"
+#include "population.hpp"
 
-Population::Population(const NeatConfig &config) : config(config)
+neat::Population::Population(const Config &config) : config(config)
 {
     for (int i = 0; i < config.population_size; ++i)
     {
@@ -24,7 +24,7 @@ Population::Population(const NeatConfig &config) : config(config)
     }
 }
 
-void Population::set_best_genome()
+void neat::Population::set_best_genome()
 {
     Genome *temp_best = species[0]->genomes[0];
     if (temp_best->fitness >= best_fitness)
@@ -34,7 +34,7 @@ void Population::set_best_genome()
     }
 }
 
-void Population::run(std::function<void(Genome *, int)> evaluate_genome, int nb_generations, std::function<void(Population *, int)> callback_generation)
+void neat::Population::run(std::function<void(Genome *, int)> evaluate_genome, int nb_generations, std::function<void(Population *, int)> callback_generation)
 {
     for (int i = 0; i < nb_generations; ++i)
     {
@@ -72,7 +72,7 @@ void Population::run(std::function<void(Genome *, int)> evaluate_genome, int nb_
     }
 }
 
-void Population::speciate()
+void neat::Population::speciate()
 {
     // Reset the genomes in each species
     for (auto &s : species)
@@ -105,7 +105,7 @@ void Population::speciate()
     species.erase(it, species.end());
 }
 
-void Population::reproduce_species()
+void neat::Population::reproduce_species()
 {
     // Calculate the sum of average fitness for all species
     float average_fitness_sum = get_average_fitness_sum();
@@ -152,7 +152,7 @@ void Population::reproduce_species()
     set_best_genome();
 }
 
-void Population::sort_species()
+void neat::Population::sort_species()
 {
     for (auto &s : species)
         s->sort_genomes();
@@ -161,7 +161,7 @@ void Population::sort_species()
               { return s1->best_fitness > s2->best_fitness; });
 }
 
-void Population::kill_stagnant_species()
+void neat::Population::kill_stagnant_species()
 {
     // Use remove_if along with a lambda function to filter out stagnant species
     auto it = std::remove_if(config.species_elitism < species.size() ? species.begin() + config.species_elitism : species.begin(), species.end(), [this](const Species *s)
@@ -179,7 +179,7 @@ void Population::kill_stagnant_species()
     species.erase(it, species.end());
 }
 
-void Population::kill_bad_species()
+void neat::Population::kill_bad_species()
 {
     float species_average_fitness = get_average_fitness_sum() / species.size();
 
@@ -200,7 +200,7 @@ void Population::kill_bad_species()
     species.erase(it, species.end());
 }
 
-void Population::reset_on_extinction()
+void neat::Population::reset_on_extinction()
 {
     if (species.empty())
     {
@@ -212,7 +212,7 @@ void Population::reset_on_extinction()
     }
 }
 
-double Population::get_average_fitness_sum()
+double neat::Population::get_average_fitness_sum()
 {
     float average_sum = 0;
     for (const auto &s : species)
@@ -220,12 +220,12 @@ double Population::get_average_fitness_sum()
     return average_sum;
 }
 
-void Population::set_average_fitness()
+void neat::Population::set_average_fitness()
 {
     average_fitness = get_average_fitness_sum() / species.size();
 }
 
-void Population::update_species()
+void neat::Population::update_species()
 {
     for (auto &s : species)
     {
@@ -235,7 +235,7 @@ void Population::update_species()
     }
 }
 
-Population *Population::clone()
+neat::Population *neat::Population::clone()
 {
     Population *clone = new Population(config);
     clone->genomes = {};

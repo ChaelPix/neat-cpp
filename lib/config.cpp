@@ -2,12 +2,12 @@
 #include <sstream>
 #include <iostream>
 #include <unordered_map>
-#include "config.h"
+#include "config.hpp"
 
 // Function to load configuration from a text file
-NeatConfig load_config(const std::string &filename)
+neat::Config neat::load_config(const std::string &filename)
 {
-    NeatConfig config;
+    neat::Config config;
 
     std::ifstream file(filename);
     if (file.is_open())

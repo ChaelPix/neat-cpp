@@ -1,23 +1,23 @@
 #include <gtest/gtest.h>
-#include "../config.h"
-#include "../node.h"
-#include "../connection_gene.h"
-#include "../activation_functions.h"
+#include "../config.hpp"
+#include "../node.hpp"
+#include "../connection_gene.hpp"
+#include "../activation_functions.hpp"
 
 class ConnectionGeneTest : public ::testing::Test
 {
 protected:
-    NeatConfig config;
-    std::shared_ptr<Node> fromNode;
-    std::shared_ptr<Node> toNode;
-    std::shared_ptr<ConnectionGene> gene;
+    neat::Config config;
+    std::shared_ptr<neat::Node> fromNode;
+    std::shared_ptr<neat::Node> toNode;
+    std::shared_ptr<neat::ConnectionGene> gene;
 
     void SetUp() override
     {
-        config = load_config("default_config.txt");
-        fromNode = std::make_shared<Node>(1, "sigmoid", 1);
-        toNode = std::make_shared<Node>(2, "sigmoid", 2);
-        gene = std::make_shared<ConnectionGene>(fromNode, toNode, 0.5, 1, true);
+        config = neat::load_config("default_config.txt");
+        fromNode = std::make_shared<neat::Node>(1, "sigmoid", 1);
+        toNode = std::make_shared<neat::Node>(2, "sigmoid", 2);
+        gene = std::make_shared<neat::ConnectionGene>(fromNode, toNode, 0.5, 1, true);
     }
 
     // Add your test functions for ConnectionGene
@@ -54,7 +54,7 @@ protected:
 
     void testClone()
     {
-        std::shared_ptr<ConnectionGene> clonedConnectionGene = gene->clone(fromNode, toNode);
+        std::shared_ptr<neat::ConnectionGene> clonedConnectionGene = gene->clone(fromNode, toNode);
         ASSERT_TRUE(gene->is_equal(clonedConnectionGene));
     }
 };

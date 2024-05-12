@@ -7,12 +7,12 @@
 #include <fstream>
 #include <filesystem>
 #include "json.hpp"
-#include "math_utils.h"
-#include "config.h"
-#include "node.h"
-#include "connection_gene.h"
-#include "connection_history.h"
-#include "genome.h"
+#include "math_utils.hpp"
+#include "config.hpp"
+#include "node.hpp"
+#include "connection_gene.hpp"
+#include "connection_history.hpp"
+#include "genome.hpp"
 
 std::string generate_uid(int size)
 {
@@ -32,9 +32,9 @@ std::string generate_uid(int size)
 
 int next_innovation_nb = 1;
 
-Genome::Genome(){};
+neat::Genome::Genome(){};
 
-Genome::Genome(const NeatConfig &config, bool crossover) : config(config), inputs(config.num_inputs), outputs(config.num_outputs), layers(2), next_node(0), fitness(0)
+neat::Genome::Genome(const Config &config, bool crossover) : config(config), inputs(config.num_inputs), outputs(config.num_outputs), layers(2), next_node(0), fitness(0)
 {
     id = generate_uid(8);
 
@@ -56,7 +56,7 @@ Genome::Genome(const NeatConfig &config, bool crossover) : config(config), input
     }
 }
 
-void Genome::fully_connect(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history)
+void neat::Genome::fully_connect(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history)
 {
     for (int i = 0; i < inputs; ++i)
     {
@@ -80,7 +80,7 @@ void Genome::fully_connect(std::vector<std::shared_ptr<ConnectionHistory>> innov
     connect_nodes();
 }
 
-std::shared_ptr<Node> Genome::get_node(int id)
+std::shared_ptr<neat::Node> neat::Genome::get_node(int id)
 {
     for (auto &n : nodes)
         if (n->id == id)
@@ -88,7 +88,7 @@ std::shared_ptr<Node> Genome::get_node(int id)
     return nullptr;
 }
 
-void Genome::connect_nodes()
+void neat::Genome::connect_nodes()
 {
     // Clear the connections for each node
     for (auto &n : nodes)
@@ -99,7 +99,7 @@ void Genome::connect_nodes()
         g->from_node->output_connections.push_back(g);
 }
 
-std::vector<double> Genome::feed_forward(std::vector<double> input_values)
+std::vector<double> neat::Genome::feed_forward(std::vector<double> input_values)
 {
     try
     {
@@ -135,7 +135,7 @@ std::vector<double> Genome::feed_forward(std::vector<double> input_values)
     }
 }
 
-void Genome::generate_network()
+void neat::Genome::generate_network()
 {
     connect_nodes();
     network.clear();
@@ -147,7 +147,7 @@ void Genome::generate_network()
                 network.push_back(n);
 }
 
-void Genome::add_node(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history)
+void neat::Genome::add_node(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history)
 {
     // Pick a random connection to create a node between
     if (genes.empty())
@@ -208,7 +208,7 @@ void Genome::add_node(std::vector<std::shared_ptr<ConnectionHistory>> innovation
     connect_nodes();
 }
 
-void Genome::remove_node()
+void neat::Genome::remove_node()
 {
     // Select a random node by excluding inputs, outputs
     auto it = std::find_if(nodes.begin(), nodes.end(), [&](const std::shared_ptr<Node> n)
@@ -229,7 +229,7 @@ void Genome::remove_node()
     }
 }
 
-void Genome::add_connection(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history)
+void neat::Genome::add_connection(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history)
 {
     // Cannot add a connection to a fully connected network
     if (fully_connected())
@@ -279,7 +279,7 @@ void Genome::add_connection(std::vector<std::shared_ptr<ConnectionHistory>> inno
     connect_nodes();
 }
 
-void Genome::remove_connection()
+void neat::Genome::remove_connection()
 {
     if (!genes.empty())
     {
@@ -288,7 +288,7 @@ void Genome::remove_connection()
     }
 }
 
-double Genome::new_connection_weight() const
+double neat::Genome::new_connection_weight() const
 {
     double weight = 0.0;
 
@@ -308,7 +308,7 @@ double Genome::new_connection_weight() const
     return weight;
 }
 
-int Genome::get_innovation_number(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history, std::shared_ptr<Node> from_node, std::shared_ptr<Node> to_node) const
+int neat::Genome::get_innovation_number(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history, std::shared_ptr<Node> from_node, std::shared_ptr<Node> to_node) const
 {
     bool is_new = true;
     int connection_innovation_nb = next_innovation_nb;
@@ -335,7 +335,7 @@ int Genome::get_innovation_number(std::vector<std::shared_ptr<ConnectionHistory>
     return connection_innovation_nb;
 }
 
-bool Genome::fully_connected() const
+bool neat::Genome::fully_connected() const
 {
     int max_connections = 0;
 
@@ -360,7 +360,7 @@ bool Genome::fully_connected() const
     return max_connections <= static_cast<int>(genes.size());
 }
 
-void Genome::mutate(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history)
+void neat::Genome::mutate(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history)
 {
     try
     {
@@ -391,7 +391,7 @@ void Genome::mutate(std::vector<std::shared_ptr<ConnectionHistory>> innovation_h
     }
 }
 
-Genome *Genome::crossover(Genome *parent) const
+neat::Genome *neat::Genome::crossover(Genome *parent) const
 {
     Genome *child = new Genome(config, true);
     child->genes.clear();
@@ -457,7 +457,7 @@ Genome *Genome::crossover(Genome *parent) const
     return child;
 }
 
-int Genome::matching_gene(Genome *parent, int innovation) const
+int neat::Genome::matching_gene(Genome *parent, int innovation) const
 {
     for (size_t i = 0; i < parent->genes.size(); ++i)
         if (parent->genes[i]->innovation_nb == innovation)
@@ -465,7 +465,7 @@ int Genome::matching_gene(Genome *parent, int innovation) const
     return -1; // No matching gene found
 }
 
-void Genome::print() const
+void neat::Genome::print() const
 {
     std::cout << "------------------------------ GENOME ----------------------------\n";
     std::cout << "⚪️ Resume: {"
@@ -489,7 +489,7 @@ void Genome::print() const
     std::cout << std::endl;
 }
 
-bool Genome::is_equal(Genome *other)
+bool neat::Genome::is_equal(Genome *other)
 {
     // Compare the number of nodes
     if (nodes.size() != other->nodes.size())
@@ -534,7 +534,7 @@ bool Genome::is_equal(Genome *other)
     return true;
 }
 
-Genome *Genome::clone()
+neat::Genome *neat::Genome::clone()
 {
     Genome *clone = new Genome(config, true);
 
@@ -556,7 +556,7 @@ Genome *Genome::clone()
     return clone;
 }
 
-void Genome::save(const std::string &file_path)
+void neat::Genome::save(const std::string &file_path)
 {
     try
     {
@@ -631,7 +631,7 @@ void Genome::save(const std::string &file_path)
     }
 }
 
-Genome *Genome::load(const std::string &file_path)
+neat::Genome *neat::Genome::load(const std::string &file_path)
 {
     try
     {

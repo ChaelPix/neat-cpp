@@ -1,18 +1,14 @@
 #include <cmath>
 #include <algorithm>
 #include <vector>
-
-/**
- * @file activation_functions.h
- * @brief Defines various activation functions used in neural networks.
- */
+#include "activation_functions.hpp"
 
 /**
  * @brief Implements the step activation function.
  * @param x Input value.
  * @return 1.0 if x is greater than 0, else 0.0.
  */
-double step(double x)
+double neat::step(double x)
 {
     return x > 0 ? 1.0 : 0.0;
 }
@@ -22,7 +18,7 @@ double step(double x)
  * @param x Input value.
  * @return The sigmoid of the input value.
  */
-double sigmoid(double x)
+double neat::sigmoid(double x)
 {
     return 1.0 / (1.0 + exp(-x));
 }
@@ -32,9 +28,9 @@ double sigmoid(double x)
  * @param x Input value.
  * @return The hyperbolic tangent of the input value.
  */
-double tan_h(double x)
+double neat::tanh(double x)
 {
-    return tanh(x);
+    return std::tanh(x);
 }
 
 /**
@@ -42,7 +38,7 @@ double tan_h(double x)
  * @param x Input value.
  * @return The ReLU of the input value.
  */
-double relu(double x)
+double neat::relu(double x)
 {
     return std::max(0.0, x);
 }
@@ -52,7 +48,7 @@ double relu(double x)
  * @param x Input value.
  * @return The leaky ReLU of the input value.
  */
-double leaky_relu(double x)
+double neat::leaky_relu(double x)
 {
     double alpha = 0.01;
     return x > 0 ? x : alpha * x;
@@ -63,7 +59,7 @@ double leaky_relu(double x)
  * @param x Input value.
  * @return The PReLU of the input value.
  */
-double prelu(double x)
+double neat::prelu(double x)
 {
     double alpha = 0.1;
     return x > 0 ? x : alpha * x;
@@ -74,7 +70,7 @@ double prelu(double x)
  * @param x Input value.
  * @return The ELU of the input value.
  */
-double elu(double x)
+double neat::elu(double x)
 {
     double alpha = 1.0;
     return x > 0 ? x : alpha * (exp(x) - 1.0);
@@ -90,7 +86,7 @@ double elu(double x)
  * @param x The input value.
  * @return The softmax-activated value, representing a probability.
  */
-double softmax(double x)
+double neat::softmax(double x)
 {
     // Softmax function for a single value
     return std::exp(x) / (1.0 + std::exp(x));
@@ -101,7 +97,7 @@ double softmax(double x)
  * @param x Input value.
  * @return The input value.
  */
-double linear(double x)
+double neat::linear(double x)
 {
     return x;
 }
@@ -111,7 +107,7 @@ double linear(double x)
  * @param x Input value.
  * @return The swish of the input value.
  */
-double swish(double x)
+double neat::swish(double x)
 {
     double beta = 1.0;
     return x / (1.0 + exp(-beta * x));
