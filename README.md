@@ -13,22 +13,22 @@ This project implements the NEAT (NeuroEvolution of Augmenting Topologies) algor
 #include <cstdio> // For printf function
 #include <vector>
 #include <cmath>
-#include "src/math_utils.h"
-#include "src/config.h"
-#include "src/genome.h"
-#include "src/population.h"
+#include "src/math_utils.hpp"
+#include "src/config.hpp"
+#include "src/genome.hpp"
+#include "src/population.hpp"
 
 int expected = 10;
 std::vector<double> inputs = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
 
 // Assuming Genome has a fitness member variable
-void evaluate_genome(Genome *g, int generation)
+void evaluate_genome(neat::Genome *g, int generation)
 {
     std::vector<double> result = g->feed_forward(inputs);
     g->fitness = 1 / abs(expected - result[0]);
 }
 
-void callback_generation(Population *population, int generation)
+void callback_generation(neat::Population *population, int generation)
 {
     printf("Generation: %d\n", generation);
     printf("Best fitness: %f\n", population->best_fitness);
@@ -37,10 +37,10 @@ void callback_generation(Population *population, int generation)
 int main(int argc, char *argv[])
 {
     // Initialize NEAT configuration
-    NeatConfig config = load_config_from_file("default_config.txt");
+    neat::Config config = neat::load_config("default_config.txt");
 
     // Initialize population
-    Population *p = new Population(config);
+    neat::Population *p = new neat::Population(config);
 
     // // Run NEAT algorithm
     int generations = 100;
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     p->best_genome->save(save_file);
 
     // Load the genome
-    Genome *g = Genome::load(save_file);
+    neat::Genome *g = neat::Genome::load(save_file);
     g->print();
 
     delete p;
