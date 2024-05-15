@@ -10,13 +10,13 @@ This project implements the NEAT (NeuroEvolution of Augmenting Topologies) algor
 
 ```cpp
 #include <iostream>
-#include <cstdio> // For printf function
+#include <cstdio>
 #include <vector>
 #include <cmath>
-#include "src/math_utils.hpp"
-#include "src/config.hpp"
-#include "src/genome.hpp"
-#include "src/population.hpp"
+#include "lib/math_utils.hpp"
+#include "lib/config.hpp"
+#include "lib/genome.hpp"
+#include "lib/population.hpp"
 
 int expected = 10;
 std::vector<double> inputs = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
