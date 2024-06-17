@@ -34,46 +34,92 @@ int next_innovation_nb = 1;
 
 neat::Genome::Genome(){};
 
-neat::Genome::Genome(const Config &config, bool crossover) : config(config), inputs(config.num_inputs), outputs(config.num_outputs), layers(2), next_node(0), fitness(0)
+neat::Genome::Genome(const Config &config, bool crossover) : config(config), inputs(config.num_inputs), outputs(config.num_outputs), next_node(0), fitness(0)
 {
     id = generate_uid(8);
+    layers = 2 + config.num_hidden_layers;
 
     if (crossover)
-        return;
-
-    // create input nodes
-    for (int i = 0; i < inputs; ++i)
     {
-        nodes.push_back(std::make_shared<Node>(i, config.activation_default, 0));
-        ++next_node;
+        return;
     }
 
-    // create output nodes
-    for (int i = 0; i < outputs; ++i)
+    for (int l = 0; l < layers; ++l)
     {
-        nodes.push_back(std::make_shared<Node>(i + inputs, config.activation_default, 1));
-        ++next_node;
+        // inputs and hidden layers
+        if (l < layers - 1)
+        {
+            for (int i = 0; i < inputs; ++i)
+            {
+                nodes.push_back(std::make_shared<Node>(l * inputs + i, config.activation_default, l));
+                ++next_node;
+            }
+        }
+        // outputs layer
+        else if (l == layers - 1)
+        {
+            for (int i = 0; i < outputs; ++i)
+            {
+                nodes.push_back(std::make_shared<Node>(l * inputs + i, config.activation_default, l));
+                ++next_node;
+            }
+        }
     }
 }
 
 void neat::Genome::fully_connect(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history)
 {
-    for (int i = 0; i < inputs; ++i)
+    int nb_layers = 2 + config.num_hidden_layers;
+    for (int l = 0; l < nb_layers; ++l)
     {
-        for (int j = 0; j < outputs; ++j)
-        {
-            int connection_innovation_nb = get_innovation_number(
-                innovation_history,
-                nodes[i],
-                nodes[inputs + j]);
+        int current_layer = l;
+        int next_layer = l + 1;
 
-            genes.push_back(
-                std::make_shared<ConnectionGene>(
-                    nodes[i],
-                    nodes[inputs + j],
-                    new_connection_weight(),
-                    connection_innovation_nb,
-                    config.enabled_default));
+        if (next_layer >= nb_layers)
+        {
+            break;
+        }
+        if (next_layer == nb_layers - 1)
+        {
+            for (int i = 0; i < inputs; ++i)
+            {
+                for (int j = 0; j < outputs; ++j)
+                {
+                    int connection_innovation_nb = get_innovation_number(
+                        innovation_history,
+                        nodes[current_layer * inputs + i],
+                        nodes[next_layer * inputs + j]);
+
+                    genes.push_back(
+                        std::make_shared<ConnectionGene>(
+                            nodes[current_layer * inputs + i],
+                            nodes[next_layer * inputs + j],
+                            new_connection_weight(),
+                            connection_innovation_nb,
+                            config.enabled_default));
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < inputs; ++i)
+            {
+                for (int j = 0; j < inputs; ++j)
+                {
+                    int connection_innovation_nb = get_innovation_number(
+                        innovation_history,
+                        nodes[current_layer * inputs + i],
+                        nodes[next_layer * inputs + j]);
+
+                    genes.push_back(
+                        std::make_shared<ConnectionGene>(
+                            nodes[current_layer * inputs + i],
+                            nodes[next_layer * inputs + j],
+                            new_connection_weight(),
+                            connection_innovation_nb,
+                            config.enabled_default));
+                }
+            }
         }
     }
 
@@ -349,11 +395,7 @@ bool neat::Genome::fully_connected() const
     // For each layer, calculate the maximum number of connections
     for (int i = 0; i < layers - 1; ++i)
     {
-        int nodes_in_front = 0;
-        for (int j = i + 1; j < layers; ++j)
-            // For each layer in front of this layer
-            nodes_in_front += nodes_in_layers[j]; // Add up nodes
-
+        int nodes_in_front = nodes_in_layers[i + 1];
         max_connections += nodes_in_layers[i] * nodes_in_front;
     }
 

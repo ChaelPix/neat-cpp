@@ -90,6 +90,7 @@ The default_config.py file contains configuration parameters for the NEAT algori
 
   - `num_inputs`: Number of input nodes in the neural network.
   - `num_outputs`: Number of output nodes in the neural network.
+  - `num_hidden_layers`: Number of initial hidden layers in the neural network.
 
 - **Connection Settings**
 
