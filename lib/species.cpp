@@ -7,13 +7,14 @@
 
 neat::Species::Species(Genome *genome)
 {
-    champion = genome;
-    best_fitness = genome->fitness;
     average_fitness = 0;
+    best_fitness = 0;
     stagnation = 0;
-    if (genome != NULL)
+    if (genome != nullptr)
     {
+        champion = genome;
         genomes.push_back(genome);
+        best_fitness = genome->fitness;
     }
 }
 
