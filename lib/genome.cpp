@@ -67,6 +67,13 @@ neat::Genome::Genome(const Config &config, bool crossover) : config(config), inp
     }
 }
 
+neat::Genome::~Genome()
+{
+    nodes.clear();
+    genes.clear();
+    network.clear();
+}
+
 void neat::Genome::fully_connect(std::vector<std::shared_ptr<ConnectionHistory>> innovation_history)
 {
     int nb_layers = 2 + config.num_hidden_layers;
