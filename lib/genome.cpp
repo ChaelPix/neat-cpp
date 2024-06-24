@@ -69,6 +69,15 @@ neat::Genome::Genome(const Config &config, bool crossover) : config(config), inp
 
 neat::Genome::~Genome()
 {
+    // Delete all the dynamically allocated nodes
+    for (auto n : nodes)
+        n.reset();
+
+    // Delete all the dynamically allocated connection genes
+    for (auto g : genes)
+        g.reset();
+
+    // Clear the nodes and genes vectors
     nodes.clear();
     genes.clear();
     network.clear();
