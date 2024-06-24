@@ -12,6 +12,9 @@ neat::Node::Node(int id, ActivationFunction activation_function, int layer) : id
 
 neat::Node::~Node()
 {
+    for (auto &c : output_connections)
+        c.reset();
+
     output_connections.clear();
 }
 
