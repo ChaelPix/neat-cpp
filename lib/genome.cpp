@@ -14,7 +14,7 @@
 #include "connection_history.hpp"
 #include "genome.hpp"
 
-std::string generate_uid(int size)
+std::string generate_genome_uid(int size)
 {
     const std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     thread_local std::random_device rd;
@@ -38,7 +38,7 @@ neat::Genome::Genome(){};
 
 neat::Genome::Genome(const Config &config, bool crossover) : config(config), inputs(config.num_inputs), outputs(config.num_outputs), next_node(0), fitness(0)
 {
-    this->id = generate_uid(8);
+    this->id = generate_genome_uid(8);
     this->layers = 2 + this->config.num_hidden_layers;
 
     if (crossover)
