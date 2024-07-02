@@ -48,15 +48,6 @@ neat::Population::~Population()
         delete sp;
     }
 
-    // Delete all the dynamically allocated genomes
-    for (auto g : this->genomes)
-    {
-        delete g;
-    }
-
-    // Delete the best genome
-    delete this->best_genome;
-
     // Clear the vectors
     this->species.clear();
     this->genomes.clear();
