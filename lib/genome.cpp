@@ -786,6 +786,7 @@ neat::Genome *neat::Genome::from_json(const nlohmann::json &json)
         genome->genes.push_back(std::make_shared<neat::ConnectionGene>(from_node, to_node, weight, innovation_nb, enabled));
     }
 
+    genome->generate_network();
     return genome;
 }
 
