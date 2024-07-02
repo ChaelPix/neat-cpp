@@ -359,6 +359,13 @@ void neat::Population::save(const std::string &filename)
             json["species"].push_back(s->to_json());
         }
 
+        // Save the genomes
+        json["genomes"] = nlohmann::json::array();
+        for (auto &g : this->genomes)
+        {
+            json["genomes"].push_back(g->to_json());
+        }
+
         std::ofstream file(filename);
         file << json.dump(4);
         file.close();
@@ -407,13 +414,12 @@ neat::Population *neat::Population::load(const std::string &filename, const Conf
             loadedPopulation->species.push_back(species);
         }
 
-        // Add the genomes of the species to the population
-        for (auto &s : loadedPopulation->species)
+        // Deserialize the genomes
+        nlohmann::json genomes_json = population_json["genomes"];
+        for (const auto &g : genomes_json)
         {
-            for (auto &g : s->genomes)
-            {
-                loadedPopulation->genomes.push_back(g);
-            }
+            Genome *genome = Genome::from_json(g);
+            loadedPopulation->genomes.push_back(genome);
         }
 
         std::cout << "Population loaded from '" << filename << "'" << std::endl;
