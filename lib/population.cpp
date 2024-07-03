@@ -334,6 +334,12 @@ void neat::Population::save(const std::string &filename)
             std::filesystem::create_directories(dir);
         }
 
+        // Check if the filename is a directory
+        if (std::filesystem::is_directory(filename))
+        {
+            throw std::runtime_error("Invalid filename: " + filename);
+        }
+
         // If the file has no extension, append ".json"
         std::filesystem::path path = filename;
         if (path.extension().empty())
@@ -394,7 +400,7 @@ neat::Population *neat::Population::load(const std::string &filename, const Conf
         loadedPopulation->average_fitness = population_json["average_fitness"];
         loadedPopulation->generation = population_json["generation"];
 
-        if (population_json.find("best_genome") != population_json.end())
+        if (population_json.contains("best_genome"))
         {
             // Deserialize the champion genome
             nlohmann::json best_genome_json = population_json["best_genome"];

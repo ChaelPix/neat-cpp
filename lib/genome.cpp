@@ -702,6 +702,8 @@ neat::Genome *neat::Genome::clone()
             clone->get_node(gene->to_node->id)));
     }
 
+    clone->inputs = this->inputs;
+    clone->outputs = this->outputs;
     clone->layers = this->layers;
     clone->next_node = this->next_node;
     clone->fitness = this->fitness;
