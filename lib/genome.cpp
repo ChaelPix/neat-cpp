@@ -528,6 +528,8 @@ neat::Genome *neat::Genome::crossover(Genome *parent) const
     Genome *child = new Genome(this->config, true);
     child->genes.clear();
     child->nodes.clear();
+    child->inputs = this->inputs;
+    child->outputs = this->outputs;
     child->layers = this->layers;
     child->next_node = this->next_node;
 
