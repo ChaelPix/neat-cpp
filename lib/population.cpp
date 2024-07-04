@@ -373,7 +373,7 @@ void neat::Population::save(const std::string &filename)
         }
 
         std::ofstream file(filename);
-        file << json.dump(4);
+        file << json.dump();
         file.close();
         std::cout << "Population saved to '" << filename << "'" << std::endl;
     }

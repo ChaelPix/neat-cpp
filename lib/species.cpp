@@ -313,8 +313,8 @@ void neat::Species::save(const std::string &file_path)
         {
             throw std::runtime_error("Failed to open file for writing: " + file_path);
         }
-        file << species_json.dump(4); // Pretty-print with 4 spaces
-        file.close();                 // Close the file after writing
+        file << species_json.dump();
+        file.close();
         std::cout << "Species saved to '" << file_path << "'" << std::endl;
     }
     catch (const std::exception &e)
