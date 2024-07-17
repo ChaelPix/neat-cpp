@@ -101,6 +101,7 @@ void neat::Genome::fully_connect(std::vector<std::shared_ptr<ConnectionHistory>>
         {
             break;
         }
+
         if (next_layer == nb_layers - 1)
         {
             for (int i = 0; i < this->inputs; ++i)
@@ -112,10 +113,10 @@ void neat::Genome::fully_connect(std::vector<std::shared_ptr<ConnectionHistory>>
                         this->nodes[current_layer * this->inputs + i],
                         this->nodes[next_layer * this->inputs + j]);
 
-                    genes.push_back(
+                    this->genes.push_back(
                         std::make_shared<ConnectionGene>(
                             this->nodes[current_layer * this->inputs + i],
-                            this->nodes[next_layer * this->inputs + j],
+                            this->nodes[next_layer * this->outputs + j],
                             new_connection_weight(),
                             connection_innovation_nb,
                             this->config.enabled_default));
@@ -153,7 +154,9 @@ std::shared_ptr<neat::Node> neat::Genome::get_node(int id)
     for (auto &n : this->nodes)
     {
         if (n->id == id)
+        {
             return n;
+        }
     }
     return nullptr;
 }
