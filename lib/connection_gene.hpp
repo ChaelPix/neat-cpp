@@ -4,7 +4,7 @@
 #include <vector>
 #include "node.hpp"
 #include "config.hpp"
-
+#include <memory>
 namespace neat
 {
     class Node; // Forward declaration

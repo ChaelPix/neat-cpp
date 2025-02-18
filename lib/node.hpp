@@ -4,7 +4,7 @@
 #include <vector>
 #include "activation_functions.hpp"
 #include "config.hpp"
-
+#include <memory>
 namespace neat
 {
     // Type alias for the function pointer

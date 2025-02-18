@@ -3,6 +3,7 @@
 #include "config.hpp"
 #include "node.hpp"
 #include "connection_gene.hpp"
+#include <memory>
 
 neat::ConnectionGene::ConnectionGene(std::shared_ptr<Node> from, std::shared_ptr<Node> to, double w, int innovation, bool enabled) : from_node(from), to_node(to), weight(w), innovation_nb(innovation), enabled(enabled) {}
 
